@@ -9,20 +9,23 @@ var extract = function(db, file, cb){
 };
 
 var loadQuery = function(db, file, cb) {
-	var sqlFile = fs.createReadStream(path.join('./sql',file+'.sql'));
+	var sqlFile = fs.createReadStream(path.join('./../sql',file+'.sql'));
 	sqlFile.on('data',function(chunk){data+=chunk;});
 	sqlFile.on('end',function(){
-		executeQuery(db, data, cb);		
+		executeQueryPostgres(db, data, cb);		
 	});
 };
 
-var executeQuery = function(db, sql, cb) {
-	db.query(sql, function(err,result){
-		if (err) console.log(err);
-
-		console.log(result);
+var executeQueryPostgres = function(db, sql, cb) {
+	db.connect(function(err){
+		db.query(sql, function(err,result){
+			if (err) console.log(err);
+			cb(result.rows);
+		});	
 	});
+};
 
+var executeQueryMSSQL = function(db, sql, cb) {
 	// var connection 	= new mssql.Connection(db_config, function(err) {
 	// 	if (err) console.log(err);
 	// 	var r = new mssql.Request(connection);
