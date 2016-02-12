@@ -60,6 +60,7 @@ var composeEmail = function(table, file, cb){
 var sendEmail = function(message){
 	server.send(message, function(err, message){
 		console.log(err || message);
+		process.exit();
 	});
 };
 
