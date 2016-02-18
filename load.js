@@ -7,17 +7,16 @@ var
 	, distro 	= require('./lib/distribution.js')
 	, f = require('./lib/format.js')
 	, server 	= email.server.connect(emailconfig)
-	, fileDir = './../csv'
 	;
 
-var load = function(data, file) {
-	saveCSV(data, file, function(){
-		email(data, file);
+var load = function(data, folder, file) {
+	saveCSV(data, folder, file, function(){
+		email(data, folder, file);
 	});
 };
 
-var saveCSV = function(data, file, cb) {
-	var outFile 		= path.join(fileDir, file + '.csv');
+var saveCSV = function(data, folder, file, cb) {
+	var outFile 		= path.join('./csv', folder, file + '.csv');
 
 	csv.writeToPath(outFile, data, {headers: true})
 	.on('finish', function(){
@@ -25,15 +24,15 @@ var saveCSV = function(data, file, cb) {
 	});
 };
 
-var email = function(data, file){
+var email = function(data, folder, file){
 	f.generateTableJSON(data, file, function(table){
-		composeEmail(table, file, function(message){
+		composeEmail(table, folder, file, function(message){
 			sendEmail(message);
 		});
 	});
 };
 
-var composeEmail = function(table, file, cb){
+var composeEmail = function(table, folder, file, cb){
 	var now = new Date();
 	var arr = ['Automated report generated on: '+now.toString().slice(0,21), // body
 		distro[file], // distro
@@ -50,7 +49,7 @@ var composeEmail = function(table, file, cb){
 		subject: subject,
 		attachment: [
 			{ data: '<html><body><p>'+text+'</p><br />'+table+'</body></html>', alternative:true},
-			{ path: path.join(fileDir,attachment), type: 'text/csv', name: attachment	}
+			{ path: path.join('./csv', folder, attachment), type: 'text/csv', name: attachment	}
 		]
 	};
 
