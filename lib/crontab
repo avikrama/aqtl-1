@@ -5,7 +5,7 @@
 
 ##### Monthly #####
 	## COGS
-		0 12 5 * * cd $COSTS ; node cogs_model.js >/dev/null
+		* * * * * cd $COSTS ; node cogs_model.js >/dev/null
 
 ##### Daily #####
 
