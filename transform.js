@@ -1,7 +1,7 @@
 var 
 	fs = require('fs')		
 	, path = require('path')
-	, f = require('./lib/format.js')
+	, f = require('./lib/helper_js/format.js')
 	;
 
 var transform = function(data, cb){

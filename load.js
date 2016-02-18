@@ -5,7 +5,7 @@ var
 	, email	= require('emailjs')
 	, emailconfig = require('./lib/config/email.js')
 	, distro 	= require('./lib/distribution.js')
-	, f = require('./lib/format.js')
+	, f = require('./lib/helper_js/format.js')
 	, server 	= email.server.connect(emailconfig)
 	;
 
