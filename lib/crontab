@@ -1,11 +1,11 @@
 ##### VARIABLES #####
 	PATH=/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/home/skilbjo/.local/bin:/home/skilbjo/bin
 	MAILTO=jskilbeck@yapstone.com
-	COSTS="/home/skilbjo/node/app/aqtl/jobs/Costs"
+	COSTS="/home/skilbjo/app/aqtl/jobs/Costs"
 
 ##### Monthly #####
 	## COGS
-		* * * * * skilbjo cd $COSTS ; node cogs_model.js >/dev/null
+		0 12 5 * * skilbjo cd $COSTS ; node cogs_model.js >/dev/null
 
 ##### Daily #####
 
