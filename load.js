@@ -49,7 +49,7 @@ var composeEmail = function(table, folder, file, cb){
 		subject: subject,
 		attachment: [
 			{ data: '<html><body><p>'+text+'</p><br />'+table+'</body></html>', alternative:true},
-			{ path: path.join('./csv', folder, attachment), type: 'text/csv', name: attachment	}
+			{ path: path.join('./../../csv', folder, attachment), type: 'text/csv', name: attachment	}
 		]
 	};
 
