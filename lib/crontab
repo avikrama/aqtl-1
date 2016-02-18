@@ -2,13 +2,10 @@
 	PATH=/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/home/skilbjo/.local/bin:/home/skilbjo/bin
 	MAILTO=jskilbeck@yapstone.com
 	COSTS="/home/jskilbeck/node/app/aqtl/jobs/Costs"
-	DAYO=18
-
-##### Daily #####
-	## Reports
-
-	## Testing
 
 ##### Monthly #####
-	## Analytics
-		40 11 18 * * cd $COSTS ; node cogs_model.js >/dev/null
+	## COGS
+		0 12 5 * * cd $COSTS ; node cogs_model.js >/dev/null
+
+##### Daily #####
+

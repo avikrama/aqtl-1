@@ -1,11 +1,15 @@
 #!/bin/sh
 
-DEPLOYDIR=~/node/app/aqtl
+APP=aqtl
+DEPLOYDIR=~/node/app/$APP
+CRONDIR=/etc/cron.d
 
 GIT_WORK_TREE="$DEPLOYDIR" git checkout -f
 
 cd "$DEPLOYDIR"
 
 npm install
+
+sudo cp lib/crontab $CRONDIR/$APP
 
 echo 'All done :D'
