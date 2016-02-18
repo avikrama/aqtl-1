@@ -15,5 +15,6 @@ where  Month in ( select date from month )
 	and Merchant_Descriptor not like 'PAY*PENDING%'
 group by  	
 	mids.Vertical, 	Network, Card_Type, Issuer_Type
-
+order by 
+	Vertical, Network, Card_Type, Issuer_Type
 
