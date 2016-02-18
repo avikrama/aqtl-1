@@ -16,7 +16,7 @@ var load = function(data, folder, file) {
 };
 
 var saveCSV = function(data, folder, file, cb) {
-	var outFile 		= path.join('./csv', folder, file + '.csv');
+	var outFile 		= path.join('./../../csv', folder, file + '.csv');
 
 	csv.writeToPath(outFile, data, {headers: true})
 	.on('finish', function(){
