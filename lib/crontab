@@ -5,7 +5,7 @@
 
 ##### Monthly #####
 	## COGS
-		* * * * * cd $COSTS ; node cogs_model.js >/dev/null
+		* * * * * skilbjo cd $COSTS ; node cogs_model.js >/dev/null
 
 ##### Daily #####
 
