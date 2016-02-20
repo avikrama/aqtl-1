@@ -2,11 +2,7 @@ var
 	fs = require('fs')
 	, path = require('path')
 	, csv = require('fast-csv')
-	, email	= require('emailjs')
-	, emailconfig = require('./lib/config/email.js')
-	// , distro 	= require('./lib/email/distribution.js')
 	, f = require('./lib/helper_js/format.js')
-	, server 	= email.server.connect(emailconfig)
 	;
 
 var load = function(data, folder, file) {
@@ -41,8 +37,6 @@ var composeEmail = function(table, folder, file, cb){
 		file+'.csv' // attachment
 	];
 
-	console.log(arr[1]);
-
 	var text = arr[0], to = arr[1], subject = arr[2], attachment = arr[3];
 
 	var message = {
@@ -60,6 +54,11 @@ var composeEmail = function(table, folder, file, cb){
 };
 
 var sendEmail = function(message){
+	var email	= require('emailjs'),
+		emailconfig = require('./lib/config/email.js'),
+		server 	= email.server.connect(emailconfig)
+	;
+
 	server.send(message, function(err, message){
 		console.log(err || message);
 		process.exit();
