@@ -17,8 +17,8 @@
 		0 12 * * 2-6 skilbjo cd $DAILY ; node YapDM_Records >/dev/null
 
 	## Testing
-		50 16 * * * skilbjo cd $DAILY ; node test_Daily_TPV.js >/dev/null
-		50 16 * * * skilbjo cd $DAILY ; node test_Daily_Card_Volume.js >/dev/null
+		25 16 * * * skilbjo cd $DAILY ; node test_Daily_TPV.js >/dev/null
+		25 16 * * * skilbjo cd $DAILY ; node test_Daily_Card_Volume.js >/dev/null
 
 ##### Monthly #####
 	## Analytics
@@ -45,28 +45,28 @@
 		# 0 18 2,3 * * skilbjo cd $FINANCE ; node cogs_Mids.js >/dev/null
 
 	## Rent & Account Management reports
-		# 0 20 5 * * skilbjo cd $OTHER ; node VisaPilot.js >/dev/null
-		# 0 20 10 * * skilbjo cd $OTHER ; node Tricity.js >/dev/null
-		# 0 20 10 * * skilbjo cd $OTHER ; node JerseyCentral.js >/dev/null		
-		# 5 20 3 * * skilbjo cd $OTHER ; node PenetrationRate.js >/dev/null
-		# 5 20 3 * * skilbjo cd $OTHER ; node PenetrationRate_Card.js >/dev/null
-		# 5 20 3 * * skilbjo cd $OTHER ; node PeopleTransacting.js >/dev/null
-		# 5 20 3 * * skilbjo cd $OTHER ; node Low_Cost_Debit.js >/dev/null
+		0 20 5 * * skilbjo cd $OTHER ; node VisaPilot.js >/dev/null
+		0 20 10 * * skilbjo cd $OTHER ; node Tricity.js >/dev/null
+		0 20 10 * * skilbjo cd $OTHER ; node JerseyCentral.js >/dev/null		
+		5 20 3 * * skilbjo cd $OTHER ; node PenetrationRate.js >/dev/null
+		5 20 3 * * skilbjo cd $OTHER ; node PenetrationRate_Card.js >/dev/null
+		5 20 3 * * skilbjo cd $OTHER ; node PeopleTransacting.js >/dev/null
+		5 20 3 * * skilbjo cd $OTHER ; node Low_Cost_Debit.js >/dev/null
 
 	## Marketing
-		# 0 20 3 * * skilbjo cd $OTHER ; node HA_Promotion_Monthly.js >/dev/null
+		0 20 3 * * skilbjo cd $OTHER ; node HA_Promotion_Monthly.js >/dev/null
 
 	## Corp Dev
-		# 0 20 3 * * skilbjo cd $CORPDEV ; node HA_Model_Net.js >/dev/null
-		# 0 20 3 * * skilbjo cd $CORPDEV ; node HA_Active_Listings_Gross_All.js >/dev/null	
+		0 20 3 * * skilbjo cd $OTHER ; node HA_Model_Net.js >/dev/null
+		0 20 3 * * skilbjo cd $OTHER ; node HA_Active_Listings_Gross_All.js >/dev/null	
 		# 0 20 3,10 * * skilbjo cd $ANALYTICS ; node HA_Gross.js >/dev/null	
 		# 0 20 3,10 * * skilbjo cd $ANALYTICS ; node HA_Net.js >/dev/null		
 
 	## Dimension
-		# 18 12 4 * * skilbjo cd $DIMENSION ; node validation_AggregationTables.js >/dev/null
-		# 18 12 4 * * skilbjo cd $DIMENSION ; node validation_DimensionTables.js >/dev/null
-		# 18 12 4 * * skilbjo cd $DIMENSION ; node validation_HADimensionTables.js >/dev/null
-		# 18 12 4 * * skilbjo cd $DIMENSION ; node validation_Issuer.js >/dev/null
+		18 12 4 * * skilbjo cd $DIMENSION ; node validation_AggregationTables.js >/dev/null
+		18 12 4 * * skilbjo cd $DIMENSION ; node validation_DimensionTables.js >/dev/null
+		18 12 4 * * skilbjo cd $DIMENSION ; node validation_HADimensionTables.js >/dev/null
+		18 12 4 * * skilbjo cd $DIMENSION ; node validation_Issuer.js >/dev/null
 
 
 	## Commissions
