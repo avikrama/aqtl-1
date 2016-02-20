@@ -5,9 +5,9 @@ var
 	, f = require('./lib/helper_js/format.js')
 	;
 
-var load = function(data, folder, file) {
+var load = function(data, folder, file, html) {
 	saveCSV(data, folder, file, function(){
-		email(data, folder, file);
+		email(data, folder, file, html);
 	});
 };
 
@@ -20,9 +20,9 @@ var saveCSV = function(data, folder, file, cb) {
 	});
 };
 
-var email = function(data, folder, file){
+var email = function(data, folder, file, html){
 	f.generateTableJSON(data, file, function(table){
-		composeEmail(table, folder, file, function(message){
+		composeEmail(table, folder, file, html, function(message){
 			sendEmail(message);
 		});
 	});
@@ -45,10 +45,15 @@ var composeEmail = function(table, folder, file, cb){
 		to: 	to,
 		subject: subject,
 		attachment: [
-			{ data: '<html><body><p>'+text+'</p><br />'+table+'</body></html>', alternative:true},
 			{ path: path.join('./../../csv', folder, attachment), type: 'text/csv', name: attachment	}
 		]
 	};
+
+	if (html) {
+		message.attachment.push({
+			data: '<html><body><p>'+text+'</p><br />'+table+'</body></html>', alternative:true
+		});
+	}
 
 	cb(message);
 };
