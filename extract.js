@@ -9,7 +9,6 @@ var extract = function(db, folder, file, cb){
 };
 
 var loadQuery = function(db, folder, file, cb) {
-					console.log(db);
 	var sqlFile = fs.createReadStream(path.join('./../../sql',folder,file+'.sql'));
 	sqlFile.on('data',function(chunk){data+=chunk;});
 	sqlFile.on('end',function(){
@@ -18,7 +17,6 @@ var loadQuery = function(db, folder, file, cb) {
 		} else if (db === 'finance') {
 			executePSQL(data, cb);					
 		} else if (db === 'localhost') {
-
 			executeLocalhost(data, cb);
 		}
 	});

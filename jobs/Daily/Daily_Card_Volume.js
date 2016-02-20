@@ -3,7 +3,7 @@ var
 	extract = require('./../../extract').extract,
 	transform = require('./../../transform').transform,
 	load = require('./../../load').load,
-	db = 'localhost', // crostoli or finance
+	db = 'crostoli', // crostoli or finance
 	file = path.basename(__filename.replace(/.js$/,'')),
   folder = __dirname.split(path.sep).pop()
 	; 
