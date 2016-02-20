@@ -14,7 +14,8 @@
     "underscore": "1.8.3",
     "pg": "4.4.4",
     "emailjs": "1.0.2",
-    "fast-csv": "1.0.0"
+    "fast-csv": "1.0.0",
+    "mssql": "2.2.0"
   },
   "devDependencies": {
     "nodemon": "1.2.1" 
