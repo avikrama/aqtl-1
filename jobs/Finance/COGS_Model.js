@@ -4,7 +4,7 @@ var
 	transform = require('./../../transform').transform,
 	load = require('./../../load').load,
 	db = 'finance', // crostoli or finance
-	html = true, // results as a formatted HTML table?
+	html = false, // results as a formatted HTML table?
 	file = path.basename(__filename.replace(/.js$/,'')),
   folder = __dirname.split(path.sep).pop()
 	; 
