@@ -9,14 +9,37 @@ var extract = function(db, folder, file, cb){
 };
 
 var loadQuery = function(db, folder, file, cb) {
+					console.log(db);
 	var sqlFile = fs.createReadStream(path.join('./../../sql',folder,file+'.sql'));
 	sqlFile.on('data',function(chunk){data+=chunk;});
 	sqlFile.on('end',function(){
-		executeQueryPostgres(db, data, cb);		
+		if (db === 'crostoli'){
+			executeMSSQL(data, cb);
+		} else if (db === 'finance') {
+			executePSQL(data, cb);					
+		} else if (db === 'localhost') {
+
+			executeLocalhost(data, cb);
+		}
 	});
 };
 
-var executeQueryPostgres = function(db, sql, cb) {
+var executeMSSQL = function(sql, cb) {
+	var mssql = require('mssql'),
+		db = require('./lib/config/crostoli_db.js')
+		;
+	var connection 	= new mssql.Connection(db, function(err) {
+		if (err) console.log(err);
+		var r = new mssql.Request(connection);
+		r.query(sql, function(err, results){
+			if (err) console.log(err);
+			cb(results);
+		});
+	});
+};
+
+var executePSQL = function(sql, cb) {
+	db = require('./lib/config/finance_db.js');
 	db.connect(function(err){
 		db.query(sql, function(err,result){
 			if (err) console.log(err);
@@ -25,16 +48,16 @@ var executeQueryPostgres = function(db, sql, cb) {
 	});
 };
 
-var executeQueryMSSQL = function(db, sql, cb) {
-	// var connection 	= new mssql.Connection(db_config, function(err) {
-	// 	if (err) console.log(err);
-	// 	var r = new mssql.Request(connection);
-	// 	r.query(sql, function(err, results){
-	// 		if (err) console.log(err);
-	// 		cb(results);
-	// 	});
-	// });
+var executeLocalhost = function(sql, cb) {
+	db = require('./lib/config/localhost_db.js');
+	db.connect(function(err){
+		db.query(sql, function(err,result){
+			if (err) console.log(err);
+			cb(result.rows);
+		});	
+	});
 };
+
 
 exports.extract = extract;
 

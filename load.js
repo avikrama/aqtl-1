@@ -4,7 +4,7 @@ var
 	, csv = require('fast-csv')
 	, email	= require('emailjs')
 	, emailconfig = require('./lib/config/email.js')
-	, distro 	= require('./lib/distribution.js')
+	// , distro 	= require('./lib/email/distribution.js')
 	, f = require('./lib/helper_js/format.js')
 	, server 	= email.server.connect(emailconfig)
 	;
@@ -33,12 +33,15 @@ var email = function(data, folder, file){
 };
 
 var composeEmail = function(table, folder, file, cb){
+	var distro = require('./lib/email/'+folder+'.js');
 	var now = new Date();
 	var arr = ['Automated report generated on: '+now.toString().slice(0,21), // body
 		distro[file], // distro
 		file +' : Yapstone BI Reports', // subject
 		file+'.csv' // attachment
 	];
+
+	console.log(arr[1]);
 
 	var text = arr[0], to = arr[1], subject = arr[2], attachment = arr[3];
 

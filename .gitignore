@@ -4,5 +4,6 @@ node_modules
 
 Ignore the stuff in the public directory except for ...
 lib/config
+lib/email/emails.js
 
 # Unless they match this file path
