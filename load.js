@@ -28,7 +28,7 @@ var email = function(data, folder, file, html){
 	});
 };
 
-var composeEmail = function(table, folder, file, cb){
+var composeEmail = function(table, folder, file, html, cb){
 	var distro = require('./lib/email/'+folder+'.js');
 	var now = new Date();
 	var arr = ['Automated report generated on: '+now.toString().slice(0,21), // body
