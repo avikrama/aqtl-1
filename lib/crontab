@@ -45,13 +45,13 @@
 		0 18 2,3 * * skilbjo cd $FINANCE ; node MIDs_Upload.js >/dev/null
 
 	## Rent & Account Management reports
-		0 20 5 * * skilbjo cd $OTHER ; node VisaPilot.js >/dev/null
-		0 20 10 * * skilbjo cd $OTHER ; node Tricity.js >/dev/null
-		0 20 10 * * skilbjo cd $OTHER ; node JerseyCentral.js >/dev/null		
-		5 20 3 * * skilbjo cd $OTHER ; node PenetrationRate.js >/dev/null
-		5 20 3 * * skilbjo cd $OTHER ; node PenetrationRate_Card.js >/dev/null
-		5 20 3 * * skilbjo cd $OTHER ; node PeopleTransacting.js >/dev/null
-		5 20 3 * * skilbjo cd $OTHER ; node Low_Cost_Debit.js >/dev/null
+		0 20 5 * * skilbjo cd $OTHER ; node Rent_VisaPilot.js >/dev/null
+		0 20 10 * * skilbjo cd $OTHER ; node Rent_Tricity.js >/dev/null
+		0 20 10 * * skilbjo cd $OTHER ; node Rent_JerseyCentral.js >/dev/null		
+		5 20 3 * * skilbjo cd $OTHER ; node Rent_PenetrationRate.js >/dev/null
+		5 20 3 * * skilbjo cd $OTHER ; node Rent_PenetrationRateCard.js >/dev/null
+		5 20 3 * * skilbjo cd $OTHER ; node Rent_PeopleTransacting.js >/dev/null
+		5 20 3 * * skilbjo cd $OTHER ; node Rent_LowCostDebit.js >/dev/null
 
 	## Marketing
 		0 20 3 * * skilbjo cd $OTHER ; node HA_Promotion_Monthly.js >/dev/null

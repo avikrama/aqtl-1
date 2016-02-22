@@ -13,6 +13,7 @@ select
 	Currency.CharCode Currency, Product.ProductType ,
 	sum(txn.Amount) as Txn_Amount, 
 	sum(txn.AmtNetPropFee) as Revenue,
+	sum(case when Product.ProductType in ('PPB') and c.ChildAggregateId like '1|87645|111105%' then txn.Amount - txn.AmtNetPropFee else 0 end) HA_Commission,
 	count(*) as Txn_Count
 	into #Report    
 from                                             
@@ -35,12 +36,15 @@ select @currencies = stuff((select ',' + quotename(colName) from (
 ) sub order by colName desc for xml path(''), type).value('.', 'nvarchar(max)'),1,1,'')
 
 select @columns = stuff((
-      select 
-            distinct ',' + quotename(Currency+'_'+c.col) 
-      from #Report
-            cross apply ( 
-                  select 'Txn_Amount' col union all select 'Revenue'  union all select 'Txn_Count' 
-            ) c
+	select col from (
+		select 
+			distinct ',' + quotename(Currency+'_'+c.col) col, Currency, src_Sort_Order 
+		from #Report
+			cross apply ( 
+				  select 'Txn_Amount' col, 2 src_Sort_Order union all select 'Revenue', 3  union all select 'Txn_Count', 1 
+			) c
+		) src
+	order by Currency, src_Sort_Order
 for xml path (''), type).value('.', 'nvarchar(max)'),1,1,'')
 
 set @PPS_query = '
@@ -61,16 +65,28 @@ pivot (
 ) pt
 '
 
+select @columns = stuff((
+	select col from (
+		select 
+			distinct ',' + quotename(Currency+'_'+c.col) col, Currency, src_Sort_Order 
+		from #Report
+			cross apply ( 
+				  select 'Txn_Amount' col, 2 src_Sort_Order union all select 'Revenue', 4  union all select 'Txn_Count', 1  union all select 'HA_Commission', 3
+			) c
+		) src
+	order by Currency, src_Sort_Order
+for xml path (''), type).value('.', 'nvarchar(max)'),1,1,'')
+
 set @PPB_query = '
 select * from (
 	select Software, Date, Currency+''_''+col col, Value from (
-		select Software, Date, Currency, Txn_Amount, Revenue, cast(Txn_Count as decimal(38,4)) Txn_Count
+		select Software, Date, Currency, Txn_Amount, Revenue, HA_Commission, cast(Txn_Count as decimal(38,4)) Txn_Count
 		from #Report
 		where ProductType in (''PPB'')
 	) src
 	unpivot (
 		value
-		for col in (Txn_Amount, Revenue, Txn_Count)
+		for col in (Txn_Amount, Revenue, Txn_Count, HA_Commission)
 	) up
 ) src
 pivot (
