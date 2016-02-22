@@ -49,7 +49,7 @@ where txn.PostDate_R between @start and @end
 	and ( case when txn.PaymentTypeId in (1,2,3,11,12) then 1 
 		when txn.PaymentTypeId in (10) and txn.ProcessorId in (22) and txn.Ref_BatchTypeId in (1) then 1 else 0 end
 	) = 1  -- Card Volume
-	and Product.ProductType = 'PPS'
+	--and Product.ProductType in ('PPS')  // Weird thing where there are Intl Surcharge on both PPS and PPB
 	and Intl.PlatformId is not null
 group by 
 	year(txn.PostDate_R) , month(txn.PostDate_R) , cast(dateadd(d, -1 , dateadd(mm, (year(txn.PostDate_R) - 1900) * 12 + month(txn.PostDate_R) , 0)) as date),  
@@ -144,7 +144,7 @@ group by
 if object_id('tempdb..#Discount_Pricing_Commissions') is not null drop table #Discount_Pricing_Commissions
 select 
 	Date, sum(Card_Volume_USD) Card_Volume , round(sum(Revenue_USD)/sum(nullif(Card_Volume_USD,0))*100,2) Bill_Rate, sum(Revenue_USD) Revenue, 
-	@Discount_Pricing_Commission as Commission_Rate, sum(Revenue_USD) * @Discount_Pricing_Commission Commission
+	@Discount_Pricing_Commission as Commission_Rate,  @Discount_Pricing_Commission/100 * sum(Card_Volume_USD) Commission
 	into #Discount_Pricing_Commissions
 from #Discount_Pricing
 group by
