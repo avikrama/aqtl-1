@@ -35,12 +35,15 @@ select @currencies = stuff((select ',' + quotename(colName) from (
 ) sub order by colName desc for xml path(''), type).value('.', 'nvarchar(max)'),1,1,'')
 
 select @columns = stuff((
+   select col from (
       select 
-            distinct ',' + quotename(Currency+'_'+c.col) 
+         distinct ',' + quotename(Currency+'_'+c.col) col, Currency, src_Sort_Order 
       from #Report
-            cross apply ( 
-                  select 'Revenue' col  union all select 'Txn_Count' 
-            ) c
+         cross apply ( 
+              select 'Txn_Amount' col, 2 src_Sort_Order union all select 'Revenue', 3  union all select 'Txn_Count', 1 
+         ) c
+      ) src
+   order by Currency, src_Sort_Order
 for xml path (''), type).value('.', 'nvarchar(max)'),1,1,'')
 
 set @query = '
