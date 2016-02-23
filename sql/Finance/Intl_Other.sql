@@ -54,7 +54,7 @@ select * from (
    ) src
    unpivot (
       value
-      for col in (Revenue, Txn_Count)
+      for col in (Txn_Amount, Revenue, Txn_Count)
    ) up
 ) src
 pivot (
