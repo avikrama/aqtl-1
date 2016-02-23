@@ -49,7 +49,7 @@ for xml path (''), type).value('.', 'nvarchar(max)'),1,1,'')
 set @query = '
 select * from (
    select Merchant, Software, Date, Currency+''_''+col col, Value from (
-      select Merchant, Software, Date, Currency, Revenue, cast(Txn_Count as decimal(38,4)) Txn_Count
+      select Merchant, Software, Date, Currency, Txn_Amount, Revenue, cast(Txn_Count as decimal(38,4)) Txn_Count
       from #Report
    ) src
    unpivot (
