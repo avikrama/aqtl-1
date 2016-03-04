@@ -40,12 +40,11 @@ select
 from
 	ETLStaging..FinanceMPR MPR
 	left join #Exceptions e on MPR.ParentName = e.ParentName
-	left join #Softwares software on coalesce(e.SoftwareName,MPR.SoftwareName)  = software.SoftwareName
+	inner join #Softwares software on coalesce(e.SoftwareName,MPR.SoftwareName)  = software.SoftwareName
 where
 	MPR.Date in (@end)
 	and MPR.PaymentTypeGroup in ('Card')
 	and Gateway in ('YapProcessing')
-	and MPR.ParentName = 'Fairfield Properties'
 group by
 	Date, coalesce(e.SoftwareName,MPR.SoftwareName), MPR.ParentName, software.CommissionRate
 order by SoftwareName, ParentName
