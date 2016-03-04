@@ -54,7 +54,7 @@
 		5 22 3 * * skilbjo cd $OTHER ; node Rent_LowCostDebit.js >/dev/null
 
 	## Marketing
-		30 12 4 * * skilbjo cd $OTHER ; node HA_Promotion_Monthly.js >/dev/null
+		35 12 4 * * skilbjo cd $OTHER ; node HA_Promotion_Monthly.js >/dev/null
 
 	## Corp Dev
 		0 23 4 * * skilbjo cd $OTHER ; node HA_Model_Net.js >/dev/null
