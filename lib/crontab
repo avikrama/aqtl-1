@@ -63,10 +63,10 @@
 		0 23 4,10 * * skilbjo cd $ANALYTICS ; node HA_Net.js >/dev/null		
 
 	## Dimension
-		20 12 4 * * skilbjo cd $DIMENSION ; node val_AggregationTables.js >/dev/null
-		20 12 4 * * skilbjo cd $DIMENSION ; node val_DimensionTables.js >/dev/null
-		20 12 4 * * skilbjo cd $DIMENSION ; node val_HADimensionTables.js >/dev/null
-		20 12 4 * * skilbjo cd $DIMENSION ; node val_Issuer.js >/dev/null
+		25 12 4 * * skilbjo cd $DIMENSION ; node val_AggregationTables.js >/dev/null
+		25 12 4 * * skilbjo cd $DIMENSION ; node val_DimensionTables.js >/dev/null
+		25 12 4 * * skilbjo cd $DIMENSION ; node val_HADimensionTables.js >/dev/null
+		25 12 4 * * skilbjo cd $DIMENSION ; node val_Issuer.js >/dev/null
 
 
 	## Commissions
