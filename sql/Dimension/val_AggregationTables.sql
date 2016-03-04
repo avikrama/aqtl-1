@@ -38,7 +38,7 @@ where Date = @end
 if object_id('tempdb..#MPR') is not null drop table #MPR
 select      /*PlatformId,*/ sum(TPV_USD) TPV_USD, sum(Card_Volume_USD) Card_Volume_USD, sum(Revenue_USD) Revenue_USD
       into #MPR
-from  ETLStaging..FinanceMPR
+from  ETLStaging..FinanceBaseMPR
 where Date = @end
       and Gateway in ('YapProcessing')
 --group by  PlatformId order by 1
