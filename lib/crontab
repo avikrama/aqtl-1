@@ -38,7 +38,7 @@
 		0 22 4 * * skilbjo cd $ANALYTICS ; node Software_NonProfit.js >/dev/null
 
 	## COGS
-		0 12 5 * * skilbjo cd $COSTS ; node cogs_model.js >/dev/null
+		0 12 5 * * skilbjo cd $FINANCE ; node COGS_Model.js >/dev/null
 
 	## Finance
 		0 20 2,3 * * skilbjo cd $FINANCE ; node Vantiv_Bucket_Analysis.js >/dev/null
@@ -68,6 +68,8 @@
 		25 12 4 * * skilbjo cd $DIMENSION ; node val_DimensionTables.js >/dev/null
 		25 12 4 * * skilbjo cd $DIMENSION ; node val_HADimensionTables.js >/dev/null
 		25 12 4 * * skilbjo cd $DIMENSION ; node val_Issuer.js >/dev/null
+		25 12 4 * * skilbjo cd $DIMENSION ; node val_SurchargeType.js >/dev/null
+		25 12 6 * * skilbjo cd $DIMENSION ; node val_COGSDatabase.js >/dev/null
 
 
 	## Commissions

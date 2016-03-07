@@ -26,6 +26,7 @@ from	YapstoneDM..[Transaction] txn
 where	txn.PostDate_R between @start and @end
       and txn.TransactionCycleId in (1,3,4,9,16)
 
+
 select * from (
 	select 'Transaction Table' [Table], Records from #Txn union all
 	select 'w/ Join ParentTable', Records from #ParentTable union all 
