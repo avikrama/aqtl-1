@@ -6,7 +6,7 @@ var fs = require('fs'),
 fs.readdir('.', function(err,files){
 	return files.map(function(file,iterator){
 		if(path.extname(file) == '.js' && file.substring(0,8) === 'Rent_Mer') {
-			var fileExec = exec('node '+file);
+			var fileExec = exec('node '+file+' -f');
 
 			fileExec.stdout.on('data',function(data){
 				console.log(data);

@@ -24,7 +24,7 @@ from
 where
   c.Vertical in ('Rent')
   and c.ParentAccountId in (
-	'16-11878002'	--Alma Realty Corp   Residential
+  '36-14772392'-- Two Trees Management Co LLC Commercial
   )
 group by
   c.PlatformId, c.ParentAccountId, c.ParentName
@@ -131,8 +131,8 @@ from
 
 if object_id('tempdb..#Report') is not null drop table #Report
 create table #Report (Date date, ParentName nvarchar(max), Capacity nvarchar(max), 
-  [Credit Volume] nvarchar(max), [Credit Count] nvarchar(max), 
-  [Debit Volume] nvarchar(max), [Debit Count] nvarchar(max), 
+  --[Credit Volume] nvarchar(max), [Credit Count] nvarchar(max), 
+  --[Debit Volume] nvarchar(max), [Debit Count] nvarchar(max), 
   [ACH Volume] nvarchar(max),   [ACH Count] nvarchar(max)
   )
 insert #Report
@@ -140,6 +140,8 @@ exec(@query)
 
 
 select *,  
-  isnull(cast([Credit Volume]as numeric),0)+isnull(cast([Debit Volume] as numeric),0)+isnull(cast([ACH Volume] as numeric),0) 'Total Volume' ,
-  isnull(cast([Credit Count]  as numeric),0)+isnull(cast([Debit Count]  as numeric),0)+isnull(cast([ACH Count]  as numeric),0)  'Total Count' 
+  --isnull(cast([Credit Volume]as numeric),0)+isnull(cast([Debit Volume] as numeric),0)+
+  isnull(cast([ACH Volume] as numeric),0) 'Total Volume' ,
+  --isnull(cast([Credit Count]  as numeric),0)+isnull(cast([Debit Count]  as numeric),0)+
+  isnull(cast([ACH Count]  as numeric),0)  'Total Count' 
 from #Report

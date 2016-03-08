@@ -4,12 +4,12 @@ var
 	,	data = ''
 	;
 
-var extract = function(db, folder, file, cb){
-	loadQuery(db, folder, file, cb);
+var extract = function(db, folder, file, subfolder, cb){
+	loadQuery(db, folder, file, subfolder,cb);
 };
 
-var loadQuery = function(db, folder, file, cb) {
-	var sqlFile = fs.createReadStream(path.join('./../../sql',folder,file+'.sql'));
+var loadQuery = function(db, folder, file, subfolder, cb) {
+	var sqlFile =  subfolder ? fs.createReadStream(path.join('./../../../sql',folder,subfolder,file+'.sql')) : fs.createReadStream(path.join('./../../sql',folder,file+'.sql')) ;
 	sqlFile.on('data',function(chunk){data+=chunk;});
 	sqlFile.on('end',function(){
 		if (db === 'crostoli'){

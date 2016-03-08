@@ -5,14 +5,14 @@ var
 	, f = require('./lib/helper_js/format.js')
 	;
 
-var load = function(data, folder, file, html) {
-	saveCSV(data, folder, file, function(){
-		email(data, folder, file, html);
+var load = function(data, folder, file, subfolder, html) {
+	saveCSV(data, folder, file, subfolder, function(){
+		email(data, folder, file, subfolder, html);
 	});
 };
 
-var saveCSV = function(data, folder, file, cb) {
-	var outFile 		= path.join('./../../csv', folder, file + '.csv');
+var saveCSV = function(data, folder, file, subfolder, cb) {
+	var outFile = subfolder ?  path.join('./../../../csv', folder, subfolder, file + '.csv') : path.join('./../../csv', folder, file + '.csv');
 
 	csv.writeToPath(outFile, data, {headers: true})
 	.on('finish', function(){
@@ -20,15 +20,15 @@ var saveCSV = function(data, folder, file, cb) {
 	});
 };
 
-var email = function(data, folder, file, html){
-	f.generateTableJSON(data, file, function(table){
-		composeEmail(table, folder, file, html, function(message){
+var email = function(data, folder, file, subfolder, html){
+	f.generateTableJSON(data, function(table){
+		composeEmail(table, folder, file, subfolder, html, function(message){
 			sendEmail(message);
 		});
 	});
 };
 
-var composeEmail = function(table, folder, file, html, cb){
+var composeEmail = function(table, folder, file, subfolder, html, cb){
 	var distro = require('./lib/email/'+folder+'.js');
 	var now = new Date();
 	var arr = ['Automated report generated on: '+now.toString().slice(0,21), // body
@@ -45,7 +45,8 @@ var composeEmail = function(table, folder, file, html, cb){
 		to: 	to,
 		subject: subject,
 		attachment: [
-			{ path: path.join('./../../csv', folder, attachment), type: 'text/csv', name: attachment	}
+			{ path: subfolder ? path.join('./../../../csv', folder, subfolder, attachment) : path.join('./../../csv', folder, attachment)
+				, type: 'text/csv', name: attachment	}
 		]
 	};
 

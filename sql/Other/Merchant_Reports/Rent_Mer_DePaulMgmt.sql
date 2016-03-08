@@ -24,7 +24,7 @@ from
 where
   c.Vertical in ('Rent')
   and c.ParentAccountId in (
-	'36-14772392'--	Two Trees Management Co LLC Commercial
+  '05-94658598' --DePaul Management Company
   )
 group by
   c.PlatformId, c.ParentAccountId, c.ParentName

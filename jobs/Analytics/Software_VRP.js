@@ -1,17 +1,22 @@
 var 
 	path = require('path'),
-	extract = require('./../../extract').extract,
-	transform = require('./../../transform').transform,
-	load = require('./../../load').load,
+  flag = (process.argv[2] ==='-f') ? true : false,	
+	extract = 	flag ? require('./../../../extract').extract 			: require('./../../extract').extract,
+	transform = flag ? require('./../../../transform').transform 	: require('./../../transform').transform,	
+	load = 			flag ? require('./../../../load').load 						: require('./../../load').load,		
 	db = 'crostoli', // crostoli or finance
 	html = false, // results as a formatted HTML table?
 	file = path.basename(__filename.replace(/.js$/,'')),
-  folder = __dirname.split(path.sep).pop()
+	dir = __dirname.split(path.sep),
+  folder = flag ? dir[dir.length-2] : dir.pop() ,
+  subfolder = flag ? subfolder = dir.pop() : null
 	; 
 
-extract(db, folder, file, function(data){
+extract(db, folder, file, subfolder, function(data){
 	transform(data, function(data){
-		load(data, folder, file, html);
+		load(data, folder, file, subfolder, html);
 	});
 });
+
+
 
