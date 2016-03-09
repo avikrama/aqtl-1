@@ -6,7 +6,7 @@
 	COSTS="/home/skilbjo/app/aqtl/jobs/Costs"
 	DAILY="/home/skilbjo/node/app/aqtl/jobs/Daily"
 	DIMENSION="/home/skilbjo/node/app/aqtl/jobs/Dimension"	
-	FINANCE=$BASE"/Finance"
+	FINANCE="/home/skilbjo/node/app/aqtl/jobs/Finance"
 	OTHER="/home/skilbjo/node/app/aqtl/jobs/Other"
 
 
@@ -39,11 +39,11 @@
 		0 22 4 * * skilbjo cd $ANALYTICS ; node Software_NonProfit.js >/dev/null
 
 	## COGS
-		45 12 9 * * skilbjo $BASE"/Finance" ; node COGS_Model.js >/dev/null
+		0 12 5 * * skilbjo cd $FINANCE ; node COGS_Model.js >/dev/null
 
 	## Finance
-		0 20 2,3 * * skilbjo cd $BASE"/Finance" ; node Vantiv_Bucket_Analysis.js >/dev/null
-		45 12 9 * * skilbjo cd $FINANCE ; node MIDs_Upload.js >/dev/null
+		0 20 2,3 * * skilbjo cd $FINANCE ; node Vantiv_Bucket_Analysis.js >/dev/null
+		0 20 2,3 * * skilbjo cd $FINANCE ; node MIDs_Upload.js >/dev/null
 
 	## Rent & Account Management reports
 		0 22 5 * * skilbjo cd $OTHER ; node Rent_VisaPilot.js >/dev/null
