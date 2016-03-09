@@ -50,7 +50,7 @@
 		5 22 3 * * skilbjo cd $OTHER ; node Rent_PenetrationRateCard.js >/dev/null
 		5 22 3 * * skilbjo cd $OTHER ; node Rent_PeopleTransacting.js >/dev/null
 		5 22 3 * * skilbjo cd $OTHER ; node Rent_LowCostDebit.js >/dev/null
-		0 22 4 * * skilbjo cd $OTHER ; node Batch_Merchant_Reports.js >/dev/null
+		39 12 9 * * skilbjo cd $OTHER"/Merchant_Reports" ; node Batch_Merchant_Reports.js >/dev/null
 
 	## Marketing
 		10 12 7 * * skilbjo cd $OTHER ; node HA_Promotion_Monthly_ParentLevel.js >/dev/null
