@@ -111,7 +111,7 @@ select
 from 
 	YapstoneDM..[Transaction] txn
 	inner join ETLStaging..FinanceHAPropertyOwners c on c.PlatformId = txn.PlatformId and txn.Ref_CompanyId = c.ChildCompanyId
-	inner join #Report c1 on c1.PlatformId = c.PlatformId and c1.PropertyOwnerAccountId = c.PropertyOwnerAccountId
+	inner join #Report c1 on c1.PlatformId = c.PlatformId and c1.ListingAccountId = c.ChildAccountId
 	inner join ETLStaging..FinanceHAProductType hapt on  hapt.PlatformId =  txn.PlatformId and hapt.IdClassId = txn.IdClassId 
 where
 	txn.TransactionCycleId in (1)
