@@ -1,8 +1,8 @@
-declare @date as date = '2015-10-31', @start as date  ,
+declare @date as date = '2016-01-31', @start as date  ,
  
-@COGS_Total as int = 6560096
+@COGS_Total as int = 10455477
 ,/* @COGS_MPR as int = 7474458*/ @COGS_MPR as decimal(25,2), @Card_Volume_USD_Allocable as decimal(25,2) ,
-@Homeaway_Domestic as int = 2731206
+@Homeaway_Domestic as int = 4733567
 , @Homeaway_Intl as int = 200000, @NonProfit as int = 73830 , @Known_COGS as nvarchar(max),
 @COGS as nvarchar(max), @ACH as nvarchar(max), @Amex_Processing as nvarchar(max), @Total_COGS as nvarchar(max)
 if object_id('tempdb..#COGS') is not null drop table #COGS
@@ -13,7 +13,7 @@ if object_id('tempdb..#Total_COGS') is not null drop table #Total_COGS
 create table #Total_COGS (Excess_COGS decimal(25,2), Allocable_Card_Volume_USD decimal(25,2))
  
 set @start = dateadd(d,1,dateadd(m,-1,@date))
-set @Card_Volume_USD_Allocable = (   select sum(Card_Volume_Net_USD)  from  ETLStaging..FinanceMPR MPR 
+set @Card_Volume_USD_Allocable = (   select sum(Card_Volume_Net_USD)  from  ETLStaging..FinanceBaseMPR MPR 
                                                            where MPR.Gateway in ('YapProcessing')
                                                                    and MPR.Date in (@date)
                                                                    and MPR.Vertical not in ('HA-Intl','HA')    )                                                                                                             
@@ -36,16 +36,17 @@ insert into #Known_COGS select ''NonProfit'', '''+cast(@NonProfit as nvarchar(ma
 exec(@COGS+';'+@Known_COGS)  
 if object_id('tempdb..#MPR') is not null drop table #MPR
  
-set @COGS_MPR = (
+set @COGS_MPR = ( 
 select sum(isnull((Txn_Count * COGS.ACH),0) + case when MPR.Vertical not in ('HA') then
-                      isnull( ((Credit_Card_Net_USD - Amex_Processing_Net_USD) * COGS.Credit * 0.01),0) + isnull((Debit_Card_Net_USD * COGS.Debit * 0.01),0) + isnull((Amex_Processing_Net_USD * COGS.Amex * 0.01),0)
-          when MPR.Vertical in ('HA') then isnull(Known_COGS.COGS,0)  end )
+					   isnull( ((Credit_Card_Net_USD - Amex_Processing_Net_USD) * COGS.Credit * 0.01),0) + isnull((Debit_Card_Net_USD * COGS.Debit * 0.01),0) + isnull((Amex_Processing_Net_USD * COGS.Amex * 0.01),0) + isnull((case when TPV is null and PaymentTypeGroup in ('Card') then TPV_Billing else 0 end * COGS.Blend * 0.01),0)
+	   when MPR.Vertical in ('HA') then isnull(Known_COGS.COGS,0)  end )
 from
-       ETLStaging..FinanceMPR MPR
-       left join #Known_COGS Known_COGS on MPR.Vertical = Known_COGS.Vertical and MPR.FeePaymentType in ('PropertyPaid') and MPR.PaymentTypeGroup in ('Card') and MPR.Gateway in ('YapProcessing')
-       left join #COGS COGS on COGS.Vertical = MPR.Vertical and MPR.Gateway in ('YapProcessing') and MPR.PaymentTypeGroup not in ('Cash')
-where MPR.Gateway in ('YapProcessing') and MPR.Date in (@date) and MPR.Vertical not in ('HA-Intl')
+	ETLStaging..FinanceBaseMPR MPR
+	left join #Known_COGS Known_COGS on MPR.Vertical = Known_COGS.Vertical and MPR.FeePaymentType in ('PropertyPaid') and MPR.PaymentTypeGroup in ('Card') and MPR.Gateway in ('YapProcessing')
+	left join #COGS COGS on COGS.Vertical = MPR.Vertical and MPR.Gateway in ('YapProcessing') and MPR.PaymentTypeGroup not in ('Cash')
+where MPR.Gateway in ('YapProcessing') and MPR.Date in (@date) and MPR.Vertical not in ('HA-Intl')	
 )
+
  
 set @Total_COGS = 'insert into #Total_COGS select '''+cast(abs(@COGS_Total-@COGS_MPR) as nvarchar(max))+''','''+cast(@Card_Volume_USD_Allocable as nvarchar(max))+''''
 exec(@Total_COGS)
@@ -83,18 +84,21 @@ select
 	sum(Revenue_USD) Revenue_USD ,
 	sum(Revenue_Net_USD) Revenue_Net_USD ,
 	sum(isnull((Txn_Count * COGS.ACH),0) +
-		case when MPR.Vertical not in ('HA') then
-			isnull( ((Credit_Card_Net_USD - Amex_Processing_Net_USD) * COGS.Credit * 0.01),0) + isnull((Debit_Card_Net_USD * COGS.Debit * 0.01),0) + isnull((Amex_Processing_Net_USD * COGS.Amex * 0.01),0)
-			+      ( isnull(
-					( ( cast(Card_Volume_Net_USD as decimal(18,2) ) / cast(Total_COGS.Allocable_Card_Volume_USD as decimal(18,2)) ) * Total_COGS.Excess_COGS  )
-								 , 0)
-					) -- Excess
-	  when MPR.Vertical in ('HA') then isnull(Known_COGS.COGS,0) end) COGS_USD,
+	   case when MPR.Vertical not in ('HA') then
+					   isnull( ((Credit_Card_Net_USD - Amex_Processing_Net_USD) * COGS.Credit * 0.01),0) + isnull((Debit_Card_Net_USD * COGS.Debit * 0.01),0) + isnull((Amex_Processing_Net_USD * COGS.Amex * 0.01),0) + isnull((case when TPV is null and PaymentTypeGroup in ('Card') then TPV_Billing else 0 end * COGS.Blend * 0.01),0)
+		   +      ( isnull(
+			 ( ( cast(Card_Volume_Net_USD as decimal(18,2) ) / cast(Total_COGS.Allocable_Card_Volume_USD as decimal(18,2)) ) * Total_COGS.Excess_COGS  ) 
+								  , 0) 
+						   ) -- Excess
+	   when MPR.Vertical in ('HA') then
+				   isnull(Known_COGS.COGS,0)
+	   end
+	) COGS_USD,
 	sum(Txn_Count) Txn_Count,
 	sum(Debit_Card_USD) Debit_TPV ,
 	sum(isnull(Intl.Intl_Issuer_TPV,0)) Intl_Issuer_TPV
 from
-	ETLStaging..FinanceMPR MPR
+	ETLStaging..FinanceBaseMPR MPR
 	join ETLStaging..FinanceParentTable c on MPR.PlatformId = c.PlatformId and MPR.ParentAccountId = c.ChildAccountId
 	left join #Known_COGS Known_COGS on MPR.Vertical = Known_COGS.Vertical and MPR.FeePaymentType in ('PropertyPaid') and MPR.PaymentTypeGroup in ('Card') and MPR.Gateway in ('YapProcessing')
 	left join #COGS COGS on COGS.Vertical = MPR.Vertical and MPR.Gateway in ('YapProcessing') and MPR.PaymentTypeGroup not in ('Cash')
