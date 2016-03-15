@@ -1,10 +1,7 @@
  
 declare @date as date = '2016-01-31',
 @start as date = '2013-01-01'  , @end as date = '2016-01-31',
-@COGS_Total as int = 10455477,
-@Homeaway_Domestic as int = 4733567,
-@COGS_Financials as nvarchar(max),
-@COGS as nvarchar(max), @ACH as nvarchar(max), @Amex_Processing as nvarchar(max), @Total_COGS as nvarchar(max)
+@COGS_Financials as nvarchar(max), @COGS as nvarchar(max)
 if object_id('tempdb..#COGS') is not null drop table #COGS
 create table #COGS (Vertical nvarchar(max), Credit decimal(25,2), Debit decimal(25,2), Blend decimal(25,2), Amex decimal(25,2), ACH decimal(25,2))
 if object_id('tempdb..#COGS_Financials_Base') is not null drop table #COGS_Financials_Base
@@ -17,7 +14,6 @@ from  ETLStaging..FinanceBaseMPR MPR
 where MPR.Gateway in ('YapProcessing') and MPR.Vertical not in ('HA-Intl','HA')
 group by MPR.Date
 
-set @ACH =                           '             insert into #ACH select ''0.03''                                          '
 set @COGS =                          '           
 insert into #COGS select ''Dues'',   ''1.99'',       ''0.36'',      ''1.36'',      ''2.29'',       ''0.03''
 insert into #COGS select ''Inn'',    ''1.94'',       ''0.47'',      ''1.65'',      ''2.29'',       ''0.03''
@@ -111,6 +107,7 @@ select
 	sum(TPV_Net_USD) TPV_Net_USD,
 	sum(Revenue_Net_USD) Revenue_Net_USD ,
 	sum(
+		isnull(
 		case 
 			when MPR.PaymentTypeGroup in ('ACH_Scan','Amex') then (Txn_Count * COGS.ACH) else 0 end
 		+
@@ -122,11 +119,12 @@ select
 				isnull( ( ( cast(Card_Volume_Net_USD as decimal(18,2) ) / cast(COGS_Financials.Allocable_Card_Volume as decimal(18,2)) ) * COGS_Financials.Allocation  ), 0) 
 			  ) -- Excess
 		when 
-			MPR.Vertical in ('HA') and MPR.PaymentTypeGroup in ('Card','Amex-Processing') and FeePaymentType in ('PropertyPaid') then
+			MPR.Vertical in ('HA') and MPR.PaymentTypeGroup in ('Card','Amex-Processing') and MPR.FeePaymentType in ('PropertyPaid') then
 			isnull(COGS_Financials.Homeaway,0)
 		else 0
 	   end
-	) COGS_Financials_USD,
+	   ,0)
+	) COGS_USD,
 	sum(Txn_Count) Txn_Count
 from
 	ETLStaging..FinanceBaseMPR MPR
