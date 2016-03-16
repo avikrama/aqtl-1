@@ -1,5 +1,5 @@
  
-declare @date as date = '2016-01-31',
+declare @date as date = '2016-02-29',
 @start as date = '2013-01-01'  , @end as date = '2016-01-31',
 @COGS_Financials as nvarchar(max), @COGS as nvarchar(max)
 if object_id('tempdb..#COGS') is not null drop table #COGS
@@ -62,6 +62,7 @@ insert into #COGS_Financials_Base select ''2015-10-31'' , 6560096 , 2731206, (se
 insert into #COGS_Financials_Base select ''2015-11-30'' , 7485626 , 3187536, (select Allocable_Card_Volume from #Allocable_Card_Volume where Date in (''2015-11-30'') )
 insert into #COGS_Financials_Base select ''2015-12-31'' , 7849861 , 3301992, (select Allocable_Card_Volume from #Allocable_Card_Volume where Date in (''2015-12-31'') )
 insert into #COGS_Financials_Base select ''2016-01-31'' , 10455477 , 4733567, (select Allocable_Card_Volume from #Allocable_Card_Volume where Date in (''2016-01-31'') )
+insert into #COGS_Financials_Base select ''2016-02-29'' , 10059903 , 4741161, (select Allocable_Card_Volume from #Allocable_Card_Volume where Date in (''2016-02-29'') )
 '
 exec(@COGS+';'+@COGS_Financials)	
 
@@ -138,8 +139,8 @@ from
 	left join #COGS COGS on COGS.Vertical = MPR.Vertical and MPR.Gateway in ('YapProcessing') and MPR.PaymentTypeGroup not in ('Cash')
 	left join #COGS_Financials COGS_Financials on MPR.Date = COGS_Financials.Date and MPR.Gateway in ('YapProcessing') and MPR.PaymentTypeGroup in ('Card','Amex-Processing')
 where
-	--MPR.Date in (@date)
-	MPR.Date between @start and @end
+	MPR.Date in (@date)
+	--MPR.Date between @start and @end
 	and MPR.Vertical not in ('HA-Intl')
 group by
     MPR.Date , MPR.PlatformId , MPR.SoftwareName ,  

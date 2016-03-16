@@ -1,6 +1,6 @@
  
-declare @date as date = '2016-01-31',
-@start as date = '2013-01-01'  , @end as date = '2016-01-31',
+declare @date as date = '2016-02-29',
+@start as date = @date  , @end as date = @date
 @COGS_Financials as nvarchar(max), @COGS as nvarchar(max)
 if object_id('tempdb..#COGS') is not null drop table #COGS
 create table #COGS (Vertical nvarchar(max), Credit decimal(25,2), Debit decimal(25,2), Blend decimal(25,2), Amex decimal(25,2), ACH decimal(25,2))
@@ -15,14 +15,14 @@ where MPR.Gateway in ('YapProcessing') and MPR.Vertical not in ('HA-Intl','HA')
 group by MPR.Date
 
 set @COGS =                          '           
-insert into #COGS select ''Dues'',   ''1.99'',       ''0.36'',      ''1.36'',      ''2.29'',       ''0.03''
-insert into #COGS select ''Inn'',    ''1.94'',       ''0.47'',      ''1.65'',      ''2.29'',       ''0.03''
-insert into #COGS select ''Rent'',   ''2.02'',       ''0.37'',      ''1.19'',      ''2.29'',       ''0.03''
-insert into #COGS select ''VRP'',    ''1.9'',       ''0.38'',      ''1.66'',      ''2.29'',       ''0.03''
-insert into #COGS select ''SRP'',    ''2.09'',       ''0.73'',      ''1.19'',      ''2.29'',       ''0.03''
-insert into #COGS select ''NonProfit'',     ''2.47'',       ''0.97'',      ''2.29'',      ''2.29'',       ''0.03''
-insert into #COGS select ''HA'',     ''1.9'',       ''0.41'',      ''1.52'',      ''2.29'',       ''0.03''
-insert into #COGS select ''HA-Intl'',       ''2.34'',       ''0.42'',      null,  null,  null
+insert into #COGS select ''Dues'',	''1.9'',	''0.35'',	''1.09'',	''2.29'',	''0.03''
+insert into #COGS select ''Inn'',	''1.91'',	''0.47'',	''1.63'',	''2.29'',	''0.03''
+insert into #COGS select ''Rent'',	''2.01'',	''0.38'',	''1.12'',	''2.29'',	''0.03''
+insert into #COGS select ''VRP'',	''1.88'',	''0.37'',	''1.55'',	''2.29'',	''0.03''
+insert into #COGS select ''SRP'',	''2.1'',	''0.73'',	''1.17'',	''2.29'',	''0.03''
+insert into #COGS select ''NonProfit'',	''2.49'',	''1.05'',	''2.27'',	''2.29'',	''0.03''
+insert into #COGS select ''HA'',	''1.88'',	''0.4'',	''1.44'',	''2.29'',	''0.03''
+insert into #COGS select ''HA-Intl'',	''2.34'',	''0.42'',	null,	null,	null
 '   
 set @COGS_Financials = '
 insert into #COGS_Financials_Base select ''2013-01-31'' , 4334559 , 765895, (select Allocable_Card_Volume from #Allocable_Card_Volume where Date in (''2013-01-31'') )
@@ -62,6 +62,7 @@ insert into #COGS_Financials_Base select ''2015-10-31'' , 6560096 , 2731206, (se
 insert into #COGS_Financials_Base select ''2015-11-30'' , 7485626 , 3187536, (select Allocable_Card_Volume from #Allocable_Card_Volume where Date in (''2015-11-30'') )
 insert into #COGS_Financials_Base select ''2015-12-31'' , 7849861 , 3301992, (select Allocable_Card_Volume from #Allocable_Card_Volume where Date in (''2015-12-31'') )
 insert into #COGS_Financials_Base select ''2016-01-31'' , 10455477 , 4733567, (select Allocable_Card_Volume from #Allocable_Card_Volume where Date in (''2016-01-31'') )
+insert into #COGS_Financials_Base select ''2016-02-29'' , 10059903 , 4741161, (select Allocable_Card_Volume from #Allocable_Card_Volume where Date in (''2016-02-29'') )
 '
 exec(@COGS+';'+@COGS_Financials)	
 
