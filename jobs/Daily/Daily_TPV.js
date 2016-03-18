@@ -16,7 +16,7 @@ var yesterday = new Date(new Date().setDate(new Date().getDate() - 1)).toISOStri
 
 extract(db, folder, file, subfolder, function(data){
 	transform(data, function(data){
-		if(Object.keys(data[0])[1] === yesterday){
+		if(data[0][yesterday] !== null){
 			load(data, folder, file, subfolder, html);
 		}
 		console.log(data);
