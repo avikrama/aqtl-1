@@ -20,7 +20,7 @@ Find the full path of the file: `pwd | awk '{print $1"/Cms_Domestic_HA.sql"}'`
 Run this command:
 ````
 git filter-branch --force --index-filter \
-'git rm --cached --ignore-unmatch /Users/jskilbeck/Code/Node/aqtl/sql/Finance/HA/Cms_Domestic_HA.sql' \
+'git rm --cached --ignore-unmatch aqtl/sql/Dimension/MPR/*.sql' \
 --prune-empty --tag-name-filter cat -- --all
 ````
 
