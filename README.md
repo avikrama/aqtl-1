@@ -23,5 +23,6 @@ git filter-branch --force --index-filter \
 'git rm --cached --ignore-unmatch aqtl/sql/Dimension/MPR/*.sql' \
 --prune-empty --tag-name-filter cat -- --all
 ````
+# sql/Dimension/MPR
 
 Add the file to `.gitignore`: `sql/Finance/HA/Cms_Domestic_HA.sql`

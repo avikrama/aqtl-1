@@ -3,7 +3,6 @@
 node_modules
 *.csv
 sql/Finance/Commissions
-# sql/Dimension/MPR
 sql/Finance/HA/Cms_Domestic_HA.sql
 
 # Ignore the stuff in the public directory except for ...
