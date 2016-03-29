@@ -12,3 +12,4 @@ lib/email/emails.js
 
 # Unless they match this file path
 !sql/Dimension/MPR/BaseMPR.sql
+!sql/Dimension/MPR/psql_MPR_Analytics.sql
