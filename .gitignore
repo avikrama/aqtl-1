@@ -4,8 +4,8 @@ node_modules
 *.csv
 lib/config
 lib/email/emails.js
-sql/Finance/Commissions
-sql/Dimension/MPR
+sql/Finance/Commissions/*
+sql/Dimension/MPR/*
 sql/Finance/HA/Cms_Domestic_HA.sql
 
 # Unless they match this file path
