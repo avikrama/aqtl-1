@@ -14,16 +14,12 @@
 	## TPV reports
 		0 19 * * 2-6 skilbjo cd $DAILY ; node Daily_TPV.js >/dev/null
 		1 19 * * 2-6 skilbjo cd $DAILY ; node Daily_Card_Volume.js >/dev/null
-
-		0 14 * * 2-6 skilbjo cd $DAILY ; node Daily_TPV.js >/dev/null
-		1 14 * * 2-6 skilbjo cd $DAILY ; node Daily_Card_Volume.js >/dev/null
-
 		1 16 * * 2-6 skilbjo cd $DAILY ; node Daily_Cash.js >/dev/null
-		0 12 * * 2-6 skilbjo cd $DAILY ; node YapDM_Records >/dev/null
-		
+		0 12 * * 2-6 skilbjo cd $DAILY ; node YapDM_Records >/dev/null	
+
 	## Testing
-		25 16 * * * skilbjo cd $DAILY ; node test_Daily_TPV.js >/dev/null
-		25 16 * * * skilbjo cd $DAILY ; node test_Daily_Card_Volume.js >/dev/null
+		25 18 * * * skilbjo cd $DAILY ; node test_Daily_TPV.js >/dev/null
+		25 18 * * * skilbjo cd $DAILY ; node test_Daily_Card_Volume.js >/dev/null
 
 ##### Monthly #####
 	## Analytics
