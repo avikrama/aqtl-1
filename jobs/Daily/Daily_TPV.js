@@ -12,7 +12,7 @@ var
   subfolder = flag ? subfolder = dir.pop() : null
 	; 
 
-var yesterday = new Date(new Date().setDate(new Date().getDate() - 1)).toISOString().slice(0,10);
+var yesterday = new Date(new Date().setDate(new Date().getDate() - 2)).toISOString().slice(0,10);
 
 extract(db, folder, file, subfolder, function(data){
 	transform(data, function(data){
