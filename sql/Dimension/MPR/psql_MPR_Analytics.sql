@@ -1,6 +1,3 @@
-with dates as ( 
-	select '2016-02-29'::DATE date
- )
 
 drop table if exists COGS;
 create temp table COGS as (
@@ -22,7 +19,6 @@ create temp table Allocable_Card_Volume as (
 	group by MPR.Date
 );
 
-create table #COGS_Financials_Base ( Date date, Total_COGS decimal(25,2), Homeaway decimal(25,2), Allocable_Card_Volume decimal(25,2) )														
 
 drop table if exists COGS_Financials_Base;
 create temp table COGS_Financials_Base as (
@@ -72,19 +68,23 @@ create temp table Initial_COGS as (
 		MPR.Date,
 		sum(
 		case 	when 	MPR.PaymentTypeGroup in ('ACH_Scan','Amex') then (Txn_Count * COGS.ACH) else 0 end +
-		case 	when 	MPR.Vertical not in ('HA') and MPR.PaymentTypeGroup in ('Card','Amex-Processing') then
+		case 	when 	MPR.Vertical not in ('HA') and MPR.PaymentTypeGroup in ('Card','AmEx-Processing') then
 								coalesce( ((Credit_Card_Net_USD - Amex_Processing_Net_USD) * COGS.Credit * 0.01),0) + coalesce((Debit_Card_Net_USD * COGS.Debit * 0.01),0) + coalesce((Amex_Processing_Net_USD * COGS.Amex * 0.01),0) + coalesce((case when TPV is null and PaymentTypeGroup in ('Card') then TPV_Billing else 0 end * COGS.Blend * 0.01),0)
-					when 	MPR.Vertical in ('HA') and MPR.PaymentTypeGroup in ('Card','Amex-Processing') and FeePaymentType in ('PropertyPaid') then
+					when 	MPR.Vertical in ('HA') and MPR.PaymentTypeGroup in ('Card','AmEx-Processing') and FeePaymentType in ('PropertyPaid') then
 								coalesce(COGS_Financials.Homeaway,0)
 								else 0 end
 		) Initial_COGS
 	from
 		mpr_base MPR
-		left join COGS on COGS.Vertical = MPR.Vertical and MPR.Gateway in ('YapProcessing') and MPR.PaymentTypeGroup in ('Card')
+		left join COGS on COGS.Vertical = MPR.Vertical and MPR.Gateway in ('YapProcessing') and MPR.PaymentTypeGroup not in ('Cash')
 		left join COGS_Financials_Base COGS_Financials on MPR.Date = COGS_Financials.Date and MPR.Gateway in ('YapProcessing') and MPR.PaymentTypeGroup in ('Card')
+	where MPR.Gateway in ('YapProcessing') and MPR.Vertical not in ('HA-Intl') and MPR.PaymentTypeGroup not in ('Cash')
 	group by
 		MPR.Date
 );
+
+
+
 
 drop table if exists COGS_Financials;
 create temp table COGS_Financials as (
@@ -95,20 +95,28 @@ create temp table COGS_Financials as (
 		join Initial_COGS on COGS_Financials_Base.Date = Initial_COGS.Date
 );
 
+select * from cogs_financials where date in ('2016-02-29') 
+;
+select date, initial_cogs::money from initial_cogs where date in ('2016-02-29') order by 1
+;
+
+select PaymentTypeGroup , sum(COGS_USD)::money COGS from MPR group by PaymentTypeGroup
+;
 drop table if exists MPR;
+
 create temp table MPR as (
 	select
-		MPR.Gateway,MPR.Vertical, MPR.ParentAccountId, MPR.ParentName ,
+		MPR.Date,MPR.Gateway,MPR.Vertical, MPR.ParentAccountId, MPR.ParentName ,
 		MPR.PaymentTypeGroup ,
 		sum(TPV_USD) TPV_USD,
 		sum(TPV_Net_USD) TPV_Net_USD,
 		sum(Revenue_Net_USD) Revenue_Net_USD ,
 		sum(coalesce(
 			case 	when MPR.PaymentTypeGroup in ('ACH_Scan','Amex') then (Txn_Count * COGS.ACH) else 0 end +
-			case 	when MPR.Vertical not in ('HA') and MPR.PaymentTypeGroup in ('Card','Amex-Processing') then
+			case 	when MPR.Vertical not in ('HA') and MPR.PaymentTypeGroup in ('Card','AmEx-Processing') then
 					coalesce( ((Credit_Card_Net_USD - Amex_Processing_Net_USD) * COGS.Credit * 0.01),0) + coalesce((Debit_Card_Net_USD * COGS.Debit * 0.01),0) + coalesce((Amex_Processing_Net_USD * COGS.Amex * 0.01),0) + coalesce((case when TPV is null and PaymentTypeGroup in ('Card') then TPV_Billing else 0 end * COGS.Blend * 0.01),0)
 				+(coalesce( ( ( cast(Card_Volume_Net_USD as decimal(18,2) ) / cast(COGS_Financials.Allocable_Card_Volume as decimal(18,2)) ) * COGS_Financials.Allocation  ), 0) ) -- Excess
-						when MPR.Vertical in ('HA') and MPR.PaymentTypeGroup in ('Card','Amex-Processing') and MPR.FeePaymentType in ('PropertyPaid') then	coalesce(COGS_Financials.Homeaway,0)
+						when MPR.Vertical in ('HA') and MPR.PaymentTypeGroup in ('Card','AmEx-Processing') and MPR.FeePaymentType in ('PropertyPaid') then	coalesce(COGS_Financials.Homeaway,0)
 						else 0
 		  end,0)
 		) COGS_USD,
@@ -118,31 +126,37 @@ create temp table MPR as (
 		left join COGS on COGS.Vertical = MPR.Vertical and MPR.Gateway in ('YapProcessing') and MPR.PaymentTypeGroup not in ('Cash')
 		left join COGS_Financials on MPR.Date = COGS_Financials.Date and MPR.Gateway in ('YapProcessing') and MPR.PaymentTypeGroup in ('Card','Amex-Processing')
 	where
-		 MPR.Date in ( select date from dates )
-		and MPR.Vertical not in ('HA-Intl')
+		MPR.Date in ('2016-02-29') and
+		MPR.Vertical not in ('HA-Intl')
 	group by
-	    MPR.Gateway,MPR.Vertical  , MPR.ParentAccountId ,MPR.ParentName,
+	    MPR.Date,MPR.Gateway,MPR.Vertical  , MPR.ParentAccountId ,MPR.ParentName,
 	    MPR.PaymentTypeGroup 
 );
 
+select * from MPR where date in ('2016-02-29') and vertical in ('NonProfit') order by parentname, paymenttypegroup --and parentname like 'Conrad%'
 
+;
 select
 	Vertical, 
-	sum(TPV_USD) as TPV_USD,
-	sum(Revenue_Net_USD) as Revenue_Net_USD,
-	sum(COGS_USD) COGS_USD
+	sum(TPV_USD)::money as TPV_USD,
+	sum(Revenue_Net_USD)::money as Revenue_Net_USD,
+	sum(COGS_USD)::money COGS_USD,
+	round((sum(Revenue_Net_USD)-sum(COGS_USD))/sum(Revenue_Net_USD)*100,2) Accounting_Margin
 from 
 	MPR
+where Date in ('2016-02-29')
 group by
 	Vertical
 union all
 select
 	'Total' , 
-	sum(TPV_USD) as TPV_USD,
-	sum(Revenue_Net_USD) as Revenue_Net_USD,
-	sum(COGS_USD) COGS_USD
+	sum(TPV_USD)::money as TPV_USD,
+	sum(Revenue_Net_USD)::money as Revenue_Net_USD,
+	sum(COGS_USD)::money COGS_USD,
+	round((sum(Revenue_Net_USD)-sum(COGS_USD))/sum(Revenue_Net_USD)*100,2) Accounting_Margin
 from 
 	MPR
+where Date in ('2016-02-29')
 
 
 
