@@ -11,7 +11,7 @@ from
        YapstoneDM..[Transaction] txn 
        inner join ETLStaging..FinanceParentTable c on c.PlatformId = txn.PlatformId and c.ChildCompanyId = txn.Ref_CompanyId
 where 
-       c.Vertical in ('Rent', 'Dues','Inn','VRP','SRP','NonProfit')
+       c.Vertical in ('Rent', 'Dues','Inn','VRP','SRP','NonProfit','HA')
        and txn.ProcessorId not in (14,16)
        and txn.PlatformId in (1,2)
        and txn.TransactionCycleId in (1) 
