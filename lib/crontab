@@ -69,7 +69,7 @@
 
 	## Commissions
 		0 21 4 * * skilbjo cd $FINANCE"/HA" ; node Batch_HA_Reports.js >/dev/null	
-		11 14 5 * * skilbjo cd $FINANCE"/Commissions" ; node Batch_Commission_Repports.js >/dev/null	
+		15 14 5 * * skilbjo cd $FINANCE"/Commissions" ; node Batch_Commission_Reports.js >/dev/null	
 
 	
 
