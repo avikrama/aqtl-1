@@ -13,7 +13,7 @@ from
 where 
        c.Vertical in ('Rent', 'Dues','Inn','VRP','SRP','NonProfit','HA')
        and txn.ProcessorId not in (14,16)
-       and txn.PlatformId in (1,2)
+       and txn.PlatformId in (1,2,3)
        and txn.TransactionCycleId in (1) 
        and txn.ProcessorId in (6,22)
        and txn.PaymentTypeId in (1,2,3,11,12)
