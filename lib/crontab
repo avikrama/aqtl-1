@@ -47,7 +47,7 @@
 		0 20 7 * * skilbjo cd $FINANCE ; node MIDs_Upload.js >/dev/null
 
 	## Rent & Account Management reports
-		0 22 5 * * skilbjo cd $OTHER ; node Rent_VisaPilot.js >/dev/null
+		5 11 7 * * skilbjo cd $OTHER ; node Rent_VisaPilot.js >/dev/null
 		5 22 3 * * skilbjo cd $OTHER ; node Rent_PenetrationRate.js >/dev/null
 		5 22 3 * * skilbjo cd $OTHER ; node Rent_PenetrationRateCard.js >/dev/null
 		5 22 3 * * skilbjo cd $OTHER ; node Rent_PeopleTransacting.js >/dev/null
