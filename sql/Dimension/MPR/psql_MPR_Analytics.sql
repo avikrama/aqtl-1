@@ -13,7 +13,7 @@ create temp table COGS as (
 drop table if exists Allocable_Card_Volume;
 create temp table Allocable_Card_Volume as (
 	select MPR.Date, sum(MPR.Card_Volume_Net_USD)  Allocable_Card_Volume
-	from  mpr_base2 MPR  
+	from  mpr_base MPR  
 	where MPR.Gateway in ('YapProcessing') and MPR.Vertical not in ('HA-Intl','HA')
 	group by MPR.Date
 );
@@ -73,7 +73,7 @@ create temp table Initial_COGS as (
 								else 0 end
 		) Initial_COGS
 	from
-		mpr_base2 MPR
+		mpr_base MPR
 		left join COGS on COGS.Vertical = MPR.Vertical and MPR.Gateway in ('YapProcessing') and MPR.PaymentTypeGroup not in ('Cash')
 		left join COGS_Financials_Base COGS_Financials on MPR.Date = COGS_Financials.Date and MPR.Gateway in ('YapProcessing') and MPR.PaymentTypeGroup in ('Card')
 	where MPR.Gateway in ('YapProcessing') and MPR.Vertical not in ('HA-Intl') and MPR.PaymentTypeGroup not in ('Cash')
@@ -109,7 +109,7 @@ create temp table MPR as (
 		) COGS_USD,
 		sum(Txn_Count) Txn_Count
 	from
-		mpr_Base2 MPR
+		mpr_base MPR
 		left join COGS on COGS.Vertical = MPR.Vertical and MPR.Gateway in ('YapProcessing') and MPR.PaymentTypeGroup not in ('Cash')
 		left join COGS_Financials on MPR.Date = COGS_Financials.Date and MPR.Gateway in ('YapProcessing') and MPR.PaymentTypeGroup in ('Card','AmEx-Processing')
 	where
