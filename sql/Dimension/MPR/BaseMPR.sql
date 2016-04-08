@@ -77,8 +77,8 @@ group by year(txn.PostDate_R), month(txn.PostDate_R), cast(dateadd(d,  0, datead
 			 
 if object_id('tempdb..#BaseMPR') is not null drop table #BaseMPR   
 select isnull(txn.Year, billing.Year) Year, isnull(txn.Month, billing.Month) Month, 
-cast(isnull(txn.Date, billing.Date) as varchar) Date, 
-isnull(txn.PlatformId,billing.PlatformId) PlatformId,isnull(txn.Gateway_Type,'YapProcessing') Gateway,
+	cast(isnull(txn.Date, billing.Date) as varchar) Date, 
+	isnull(txn.PlatformId,billing.PlatformId) PlatformId,isnull(txn.Gateway_Type,'YapProcessing') Gateway,
 	isnull(txn.Vertical,billing.Vertical) Vertical, coalesce(txn.SoftwareName,billing.SoftwareName,'Non-Affiliated')  SoftwareName, isnull(txn.ParentAccountId,billing.ParentAccountId) as ParentAccountId,isnull(txn.ParentName,billing.ParentName) as ParentName ,
 	isnull(txn.Fee_Payment_Type,'PropertyPaid') FeePaymentType ,isnull(txn.Payment_Type,billing.Payment_Type) PaymentTypeGroup ,isnull(txn.Currency,'USD') Currency,
 	sum( txn.TPV ) TPV , sum( txn.TPV_Net) TPV_Net ,sum( txn.TPV_USD) TPV_USD ,sum( txn.TPV_Net_USD) TPV_Net_USD  ,sum( isnull(billing.Txn_Amount, 0) ) TPV_Billing ,
