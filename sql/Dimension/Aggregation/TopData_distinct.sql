@@ -50,7 +50,8 @@ group by year(txn.postdate_r) , month(txn.postdate_r) , cast(dateadd(d,  0, date
 	c.Vertical, c.SoftwareName , c.ParentAccountId , c.ParentName, cur.CharCode
 	 
 if object_id('tempdb..#TopData') is not null drop table #TopData
-select isnull(txn.Year,billing.Year) Year, isnull(txn.Month,billing.Month) Month,isnull(txn.Date, billing.Date ) Date, isnull(txn.PlatformId,billing.PlatformId) PlatformId , isnull(txn.Gateway,'YapProcessing') Gateway, 
+select isnull(txn.Year,billing.Year) Year, isnull(txn.Month,billing.Month) Month,
+	cast(isnull(txn.Date, billing.Date) as varhcar) Date, isnull(txn.PlatformId,billing.PlatformId) PlatformId , isnull(txn.Gateway,'YapProcessing') Gateway, 
 	isnull(txn.Vertical,billing.Vertical) Vertical, coalesce(txn.SoftwareName,billing.SoftwareName,'Non-Affiliated') SoftwareName ,isnull(txn.ParentAccountId,billing.ParentAccountId) ParentAccountId ,isnull(txn.ParentName,billing.ParentName) ParentName ,
 	isnull(txn.Currency,'USD') Currency,
 	sum( isnull(txn.TPV_USD,0) ) TPV_USD,
@@ -62,7 +63,8 @@ from
 	#txn txn
 	full outer  join #Billing billing	on	billing.Year = txn.Year and billing.Month = txn.Month and  billing.PlatformId = txn.PlatformId and billing.ParentAccountId = txn.ParentAccountId 
 		and txn.Currency in ('USD') 
-group by  isnull(txn.Year,billing.Year) , isnull(txn.Month,billing.Month) ,isnull(txn.Date, billing.Date ) , isnull(txn.PlatformId,billing.PlatformId)  , isnull(txn.Gateway,'YapProcessing') , 
+group by  isnull(txn.Year,billing.Year) , isnull(txn.Month,billing.Month) ,
+	cast(isnull(txn.Date, billing.Date ) as varchar) , isnull(txn.PlatformId,billing.PlatformId)  , isnull(txn.Gateway,'YapProcessing') , 
 	isnull(txn.Vertical,billing.Vertical) , coalesce(txn.SoftwareName,billing.SoftwareName,'Non-Affiliated')  ,isnull(txn.ParentAccountId,billing.ParentAccountId)  ,isnull(txn.ParentName,billing.ParentName)  ,
 	isnull(txn.Currency,'USD') 
 	
