@@ -32,7 +32,8 @@ select year(txn.postdate_r) Year , month(txn.postdate_r) Month , cast(dateadd(d,
 	c.Vertical, c.SoftwareName , c.ParentAccountId , c.ParentName, cur.CharCode Currency ,
 	sum( txn.Amount ) TPV, sum( txn.Amount * fx.Rate ) TPV_USD ,
 	sum( isnull(txn.AmtNetConvFee,0) + isnull(txn.AmtNetPropFee,0) ) Revenue, sum( isnull(txn.AmtNetConvFee,0) + isnull(txn.AmtNetPropFee,0) * fx.Rate ) Revenue_USD    ,  
-	count(*) as Txn_Count,
+	--count(*) as Txn_Count,
+	count(distinct(case when txn.TransactionCycleId in (1) then cast(left(txn.IdClassId, charindex(':', txn.IdClassId) -1 ) as varchar) + cast(txn.TransactionCycleId as varchar) else null end )) Txn_Count,      
 	sum(case when txn.paymenttypeid in (1, 2, 3, 11, 12, /* <-- regular cards */ /* pre 2012 debit networks --> */  6,7,8,9) and txn.TransactionCycleId in (1) then txn.Amount when txn.PaymentTypeId in (10) and txn.ProcessorId in (22) and txn.Ref_BatchTypeId in (1) /* Amex , Bucket , Vantiv = Processing */ and txn.TransactionCycleId in (1) then txn.Amount else 0 end) as Card_Volume,
 	sum(case when txn.paymenttypeid in (1, 2, 3, 11, 12, /* <-- regular cards */ /* pre 2012 debit networks --> */  6,7,8,9) and txn.TransactionCycleId in (1) then txn.Amount  when txn.PaymentTypeId in (10) and txn.ProcessorId in (22) and txn.Ref_BatchTypeId in (1) /* Amex , Bucket , Vantiv = Processing */ and txn.TransactionCycleId in (1) then txn.Amount else 0 end * fx.Rate ) as Card_Volume_USD
 	into #txn
@@ -49,10 +50,8 @@ group by year(txn.postdate_r) , month(txn.postdate_r) , cast(dateadd(d,  0, date
 	c.Vertical, c.SoftwareName , c.ParentAccountId , c.ParentName, cur.CharCode
 	 
 if object_id('tempdb..#TopData') is not null drop table #TopData
-select isnull(txn.Year,billing.Year) Year, 
-	
-	cast(isnull(txn.Month,billing.Month) Month,isnull(txn.Date, billing.Date) as varchar) Date, 
-	isnull(txn.PlatformId,billing.PlatformId) PlatformId , isnull(txn.Gateway,'YapProcessing') Gateway, 
+select isnull(txn.Year,billing.Year) Year, isnull(txn.Month,billing.Month) Month,
+	cast(isnull(txn.Date, billing.Date) as varhcar) Date, isnull(txn.PlatformId,billing.PlatformId) PlatformId , isnull(txn.Gateway,'YapProcessing') Gateway, 
 	isnull(txn.Vertical,billing.Vertical) Vertical, coalesce(txn.SoftwareName,billing.SoftwareName,'Non-Affiliated') SoftwareName ,isnull(txn.ParentAccountId,billing.ParentAccountId) ParentAccountId ,isnull(txn.ParentName,billing.ParentName) ParentName ,
 	isnull(txn.Currency,'USD') Currency,
 	sum( isnull(txn.TPV_USD,0) ) TPV_USD,
@@ -65,9 +64,7 @@ from
 	full outer  join #Billing billing	on	billing.Year = txn.Year and billing.Month = txn.Month and  billing.PlatformId = txn.PlatformId and billing.ParentAccountId = txn.ParentAccountId 
 		and txn.Currency in ('USD') 
 group by  isnull(txn.Year,billing.Year) , isnull(txn.Month,billing.Month) ,
-	cast(isnull(txn.Date, billing.Date) as varchar , 
-	isnull(txn.PlatformId,billing.PlatformId)  , 
-	isnull(txn.Gateway,'YapProcessing') , 
+	cast(isnull(txn.Date, billing.Date ) as varchar) , isnull(txn.PlatformId,billing.PlatformId)  , isnull(txn.Gateway,'YapProcessing') , 
 	isnull(txn.Vertical,billing.Vertical) , coalesce(txn.SoftwareName,billing.SoftwareName,'Non-Affiliated')  ,isnull(txn.ParentAccountId,billing.ParentAccountId)  ,isnull(txn.ParentName,billing.ParentName)  ,
 	isnull(txn.Currency,'USD') 
 	
@@ -77,7 +74,8 @@ select
 	PlatformId, 
 	convert(varchar,cast(sum(TPV_USD) as money),1) TPV_USD , 
 	convert(varchar,cast(sum(Card_Volume_USD) as money),1) Card_Volume_USD ,	
-	convert(varchar,cast(sum(Revenue_USD) as money),1) Revenue_USD
+	convert(varchar,cast(sum(Revenue_USD) as money),1) Revenue_USD,
+	convert(varchar,cast(sum(Txn_Count) as money),1) Txn_Count
 from 
 	#TopData
 where

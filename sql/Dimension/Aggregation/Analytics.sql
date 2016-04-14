@@ -41,21 +41,23 @@ exec sp_executesql @Network
 
 select 
 	year(txn.PostDate_r) Year ,month(txn.PostDate_r) Month,
-	cast(cast(dateadd(d,  0, dateadd(d, -1 , dateadd(mm, (year(txn.PostDate_r) - 1900) * 12 + month(txn.PostDate_r) , 0))) as date) as varchar) as Date, 
-	txn.PlatformId,case	when txn.ProcessorId = 14 then 'GatewayOnly' else 'YapProcessing' end as Gateway,
+	cast(cast(dateadd(d,  0, dateadd(d, -1 , dateadd(mm, (year(txn.PostDate_r) - 1900) * 12 + month(txn.PostDate_r) , 0))) as date) as varchar) as Date, txn.PlatformId,case	when txn.ProcessorId = 14 then 'GatewayOnly' else 'YapProcessing' end as Gateway,
 	c.Vertical ,pt.Name PaymentType ,Network.Network,ptg.PaymentTypeGroup ,cur.CharCode Currency,
 	sum(case when txn.TransactionCycleId in (1) then txn.amount else 0 end) TPV,
 	sum(case when txn.TransactionCycleId in (1) then txn.amount else 0 end
 		* fx.Rate
 	) TPV_USD	,
-	sum(case when txn.TransactionCycleId in (1) then 1 else 0 end) as Txn_Count,
+	--sum(case when txn.TransactionCycleId in (1) then 1 else 0 end) as Txn_Count,
+	count(distinct(case when txn.TransactionCycleId in (1) then cast(left(txn.IdClassId, charindex(':', txn.IdClassId) -1 ) as varchar) + cast(txn.TransactionCycleId as varchar) else null end )) Txn_Count,      
 	sum(case when txn.paymenttypeid in (1, 2, 3, 11, 12, /* <-- regular cards */ /* pre 2012 debit networks --> */  6,7,8,9) and txn.TransactionCycleId in (1) then txn.Amount 
 			when txn.PaymentTypeId in (10) and txn.ProcessorId in (22) and txn.Ref_BatchTypeId in (1) /* Amex , Bucket , Vantiv = Processing */ and txn.TransactionCycleId in (1) then txn.Amount
 		else 0 end) as Card_Volume,
-	sum(case when txn.paymenttypeid in (1, 2, 3, 11, 12, /* <-- regular cards */ /* pre 2012 debit networks --> */  6,7,8,9) and txn.TransactionCycleId in (1) then 1 
-			when txn.PaymentTypeId in (10) and txn.ProcessorId in (22)  and txn.Ref_BatchTypeId in (1) /* Amex , Bucket , Vantiv = Processing */ and txn.TransactionCycleId in (1) then 1
-		else 0 end) Card_Txn_Count,
-
+	--sum(case when txn.paymenttypeid in (1, 2, 3, 11, 12, /* <-- regular cards */ /* pre 2012 debit networks --> */  6,7,8,9) and txn.TransactionCycleId in (1) then 1 
+	--		when txn.PaymentTypeId in (10) and txn.ProcessorId in (22)  and txn.Ref_BatchTypeId in (1) /* Amex , Bucket , Vantiv = Processing */ and txn.TransactionCycleId in (1) then 1
+	--	else 0 end) Card_Txn_Count,
+	count(distinct(case when txn.paymenttypeid in (1, 2, 3, 11, 12, /* <-- regular cards */ /* pre 2012 debit networks --> */  6,7,8,9) and txn.TransactionCycleId in (1) then cast(left(txn.IdClassId, charindex(':', txn.IdClassId) -1 ) as varchar) + cast(txn.TransactionCycleId as varchar) 
+			when txn.PaymentTypeId in (10) and txn.ProcessorId in (22)  and txn.Ref_BatchTypeId in (1) /* Amex , Bucket , Vantiv = Processing */ and txn.TransactionCycleId in (1) then cast(left(txn.IdClassId, charindex(':', txn.IdClassId) -1 ) as varchar) + cast(txn.TransactionCycleId as varchar)
+		else null end)) Card_Txn_Count,
 	sum(case when txn.paymenttypeid in (1, 2, 3, 11, 12, /* <-- regular cards */ /* pre 2012 debit networks --> */  6,7,8,9) and txn.TransactionCycleId in (1) then txn.Amount 
 			when txn.PaymentTypeId in (10) and txn.ProcessorId in (22) and txn.Ref_BatchTypeId in (1) /* Amex , Bucket , Vantiv = Processing */ and txn.TransactionCycleId in (1) then txn.Amount
 		else 0 end
@@ -77,8 +79,7 @@ where
 	and txn.ProcessorId not in (16)					
 group by  
 	year(txn.PostDate_r), month(txn.PostDate_r) , 
-	cast(cast(dateadd(d,  0, dateadd(d, -1 , dateadd(mm, (year(txn.PostDate_r) - 1900) * 12 + month(txn.PostDate_r) , 0))) as date) as varchar),
-	txn.PlatformId, case when txn.ProcessorId = 14 then 'GatewayOnly' else 'YapProcessing' end ,							
+	cast(cast(dateadd(d,  0, dateadd(d, -1 , dateadd(mm, (year(txn.PostDate_r) - 1900) * 12 + month(txn.PostDate_r) , 0))) as date) as varchar),txn.PlatformId, case when txn.ProcessorId = 14 then 'GatewayOnly' else 'YapProcessing' end ,							
 	c.Vertical ,pt.Name ,cur.CharCode ,Network.Network ,ptg.PaymentTypeGroup
 	
 --select * from #Analytics	
@@ -86,7 +87,9 @@ group by
 select 
 	PlatformId, 
 	convert(varchar,cast(sum(TPV_USD) as money),1) TPV_USD , 
-	convert(varchar,cast(sum(Card_Volume_USD) as money),1) Card_Volume_USD 
+	convert(varchar,cast(sum(Card_Volume_USD) as money),1) Card_Volume_USD ,
+	convert(varchar,cast(sum(Txn_Count) as money),1) Txn_Count,
+	convert(varchar,cast(sum(Card_Txn_Count) as money),1) Card_Txn_Count	
 from 
 	#Analytics
 where

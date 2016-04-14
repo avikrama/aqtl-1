@@ -4,7 +4,7 @@ var
 	extract = 	flag ? require('./../../../extract').extract 			: require('./../../extract').extract,
 	transform = flag ? require('./../../../transform').transform 	: require('./../../transform').transform,	
 	load = 			flag ? require('./../../../load').load 						: require('./../../load').load,		
-	db = 'crostoli', // crostoli or finance
+	db = 'finance', // crostoli or finance
 	html = false, // results as a formatted HTML table?
 	file = path.basename(__filename.replace(/.js$/,'')),
 	dir = __dirname.split(path.sep),
