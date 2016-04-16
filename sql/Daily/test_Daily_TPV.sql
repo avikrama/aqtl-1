@@ -88,10 +88,10 @@ group by
      case when txn.ProcessorId not in (14,16) then c.Vertical else 'GtwyOnly' end
 union
 select
-  'lyYTD' as Date, 'ExtrnlGtwy' as Vertical, 16567412 as TPV 
+  'lyYTD' as Date, 'ExtrnlGtwy' as Vertical, 25847805 as TPV 
 union
 select
-  'YTD' as Date , 'ExtrnlGtwy' as Vertical, 23987398 as TPV
+  'YTD' as Date , 'ExtrnlGtwy' as Vertical, 39905133 as TPV
  
 if object_id('tempdb..#txn') is not null drop table #txn
 select * into #txn from (
