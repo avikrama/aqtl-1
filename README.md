@@ -21,11 +21,11 @@ What other tools exist to schedule a nightly KPI metrics report?
 		select * from [Transaction] where date = @date````
 - Save the file in the directory path `sql/Finance` as `myquery.sql`
 - Create a `myquery.js` file in the corresponding `jobs/Finance` path,
-		extract(db, folder, file, subfolder, function(data){
+		````extract(db, folder, file, subfolder, function(data){
 			transform(data, function(data){
 				load(data, folder, file, subfolder, html);
 			});
-		});
+		});````
 - Create an email distribution list in `lib/email/finance.js`: `myquery: [ skilbjo@yapstone.com ]`
 - Schedule the report via cron in `lib/crontab`: `0 12 * * 2-6 skilbjo cd $FINANCE ; node myquery.js >/dev/null`
 - Enjoy!
