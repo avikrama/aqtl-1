@@ -14,7 +14,7 @@ What other tools exist to schedule a nightly KPI metrics report?
 - `git clone git@github.com:skilbjo/aqtl.git ; cd aqtl`
 - `npm install`
 
-## How to
+## Workflow
 - Write & parameterize the SQL query of the data to extract, ie:
 		````declare @start as date
 		set @date = getdate()
