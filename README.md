@@ -3,14 +3,12 @@
 ## What 
 Automated query reporting, using `nodejs` as a scripting language.
 
-Similar to an `ETL` app, except the `load` phase is an email/`csv` of the data.
+Similar to an `ETL` app, except the `load` phase is an email/csv of the data.
 
-Configurable database support (`MS SQL` OR `postgres`) agnostic for the `extract` phase, configurable in the script's `db` variable.
+Database agnostic. Configurable support for `MS SQL` OR `postgres`.
 
 ## Why
-What other open-source BI reporting tools are out there? How else can I schedule a nightly KPI metrics report?
-
-Also, I'm tired of changing the dates in a parameterized query, and doing data pull refreshes - the computer can automate away this part of my job!
+What other tools exist to schedule a nightly KPI metrics report?
 
 ## Install
 - `git clone git@github.com:skilbjo/aqtl.git ; cd aqtl`
