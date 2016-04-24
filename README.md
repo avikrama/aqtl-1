@@ -12,14 +12,13 @@ What other tools exist to schedule a nightly KPI metrics report?
 
 ## Install
 - `git clone git@github.com:skilbjo/aqtl.git ; cd aqtl`
-
-- Create a `sql` file with your SQL query, and an identical `job` file that you can then schedule with `cron`
+- `npm install`
 
 ## How to
 - Write & parameterize the SQL query of the data to extract, ie:
-		declare @start as date
+		````declare @start as date
 		set @date = getdate()
-		select * from [Transaction] where date = @date
+		select * from [Transaction] where date = @date````
 - Save the file in the directory path `sql/Finance` as `myquery.sql`
 - Create a `myquery.js` file in the corresponding `jobs/Finance` path,
 		extract(db, folder, file, subfolder, function(data){
