@@ -24,7 +24,8 @@ select year(txn.PostDate_R) Year , month(txn.PostDate_R) Month , cast(dateadd(d,
        'HA' as Vertical, 'USD' as CharCode , Product.ProductType ,
        case when txn.PaymentTypeId in (1,2,3,11,12) then 'Card' when txn.PaymentTypeId in (10) then 'Amex' when txn.PaymentTypeId in (4,5) then 'ACH' else cast(txn.PaymentTypeId as nvarchar(max)) end as PaymentType ,
        sum(txn.Amount) as TPV_USD,  sum(txn.AmtNetPropFee) as Revenue_USD,
-       count(*) as Txn_Count,        count(distinct(c.AccountId)) #of_Merchants
+       count(distinct(case when txn.TransactionCycleId in (1) then cast(left(txn.IdClassId, charindex(':', txn.IdClassId) -1 ) as varchar) + cast(txn.TransactionCycleId as varchar) else null end )) Txn_Count,        
+       count(distinct(c.AccountId)) #of_Merchants
        into #HA_Analytics_HA
 from                                           
    YapstoneDM.dbo.[Transaction] txn
@@ -56,7 +57,8 @@ select year(txn.PostDate_R) Year , month(txn.PostDate_R) Month , cast(dateadd(d,
        'HA-Intl' as Vertical, Currency.CharCode ,Product.ProductType ,
                case when txn.PaymentTypeId in (1,2,3,11,12) then 'Card' when txn.PaymentTypeId in (10) then 'Amex' when txn.PaymentTypeId in (4,5) then 'ACH' else cast(txn.PaymentTypeId as nvarchar(max)) end as PaymentType ,
        sum(txn.Amount * fx.Rate) as TPV_USD, sum(txn.AmtNetPropFee * fx.Rate ) as Revenue_USD,
-       count(*) as Txn_Count ,        count(distinct(c.AccountId)) #of_Merchants
+  count(distinct(case when txn.TransactionCycleId in (1) then cast(left(txn.IdClassId, charindex(':', txn.IdClassId) -1 ) as varchar) + cast(txn.TransactionCycleId as varchar) else null end )) Txn_Count,            
+       count(distinct(c.AccountId)) #of_Merchants
        into #HA_Analytics_GD1
 from                                           
    YapstoneDM.dbo.[Transaction] txn

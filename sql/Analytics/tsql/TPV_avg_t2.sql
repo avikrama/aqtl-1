@@ -1,6 +1,3 @@
-
-
-
 declare @maxYear as nvarchar(max) , 
 ---- Query Helpers
 @paymentTypes as nvarchar(max), @allVerticals as nvarchar(max), @PaymentTypeGroup as nvarchar(max), @months as nvarchar(max), @years as nvarchar(max),
@@ -134,5 +131,5 @@ from Average_Ticket'
 
 --exec sp_executesql @tpv
 --exec sp_executesql @txnCount
-exec sp_executesql @averageTicket
+exec sp_executesql @averageTicketYear
 

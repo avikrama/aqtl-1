@@ -24,16 +24,14 @@ select year(txn.PostDate_R) Year , month(txn.PostDate_R) Month , cast(dateadd(d,
        'HA' as Vertical, 'USD' as CharCode , Product.ProductType ,
        case when txn.PaymentTypeId in (1,2,3,11,12) then 'Card' when txn.PaymentTypeId in (10) then 'Amex' when txn.PaymentTypeId in (4,5) then 'ACH' else cast(txn.PaymentTypeId as nvarchar(max)) end as PaymentType ,
        sum(txn.Amount) as TPV_USD,  sum(txn.AmtNetPropFee) as Revenue_USD,
-  count(distinct(case when txn.TransactionCycleId in (1) then cast(left(txn.IdClassId, charindex(':', txn.IdClassId) -1 ) as varchar) + cast(txn.TransactionCycleId as varchar) else null end )) Txn_Count,         
-       count(distinct(c.AccountId)) #of_Merchants
+       count(*) as Txn_Count,        count(distinct(c.AccountId)) #of_Merchants
        into #HA_Analytics_HA
 from                                           
    YapstoneDM.dbo.[Transaction] txn
    inner join YapstoneDM.dbo.Company c              on txn.PlatformId = c.PlatformId and txn.Ref_CompanyId = c.CompanyId 
    inner join ETLStaging..FinanceHAProductType Product                      on txn.IdClassId = Product.IdClassId and txn.PlatformId = Product.PlatformId
 where txn.PostDate_R between @start and @end
-       and txn.TransactionCycleId in (1,3,4,9,16)
-       and txn.PlatformId in (3) and txn.ProcessorId not in (14,16)
+       and txn.TransactionCycleId in (1) and txn.PlatformId in (3) and txn.ProcessorId not in (14,16)
        -- and txn.PaymentTypeId in (1,2,3,11,12)
 group by year(txn.PostDate_R) , month(txn.PostDate_R) , cast(dateadd(d, -1 , dateadd(mm, (year(txn.PostDate_R) - 1900) * 12 + month(txn.PostDate_R) , 0)) as date),  Product.ProductType ,
        case when txn.PaymentTypeId in (1,2,3,11,12) then 'Card' when txn.PaymentTypeId in (10) then 'Amex' when txn.PaymentTypeId in (4,5) then 'ACH' else cast(txn.PaymentTypeId as nvarchar(max)) end
@@ -58,8 +56,7 @@ select year(txn.PostDate_R) Year , month(txn.PostDate_R) Month , cast(dateadd(d,
        'HA-Intl' as Vertical, Currency.CharCode ,Product.ProductType ,
                case when txn.PaymentTypeId in (1,2,3,11,12) then 'Card' when txn.PaymentTypeId in (10) then 'Amex' when txn.PaymentTypeId in (4,5) then 'ACH' else cast(txn.PaymentTypeId as nvarchar(max)) end as PaymentType ,
        sum(txn.Amount * fx.Rate) as TPV_USD, sum(txn.AmtNetPropFee * fx.Rate ) as Revenue_USD,
-  count(distinct(case when txn.TransactionCycleId in (1) then cast(left(txn.IdClassId, charindex(':', txn.IdClassId) -1 ) as varchar) + cast(txn.TransactionCycleId as varchar) else null end )) Txn_Count,        
-       count(distinct(c.AccountId)) #of_Merchants
+       count(*) as Txn_Count ,        count(distinct(c.AccountId)) #of_Merchants
        into #HA_Analytics_GD1
 from                                           
    YapstoneDM.dbo.[Transaction] txn
@@ -72,7 +69,7 @@ where
        and txn.ProcessorId not in (14,16)
        and txn.PlatformId in (4)
        -- and txn.PaymentTypeId in (1,2,3,11,12)
-       and txn.TransactionCycleId in (1,3,4,9,16)
+       and txn.TransactionCycleId in (1)
 group by year(txn.PostDate_R) , month(txn.PostDate_R) ,  cast(dateadd(d, -1 , dateadd(mm, (year(txn.PostDate_R) - 1900) * 12 + month(txn.PostDate_R) , 0)) as date) , Currency.CharCode ,
        Product.ProductType ,
                case when txn.PaymentTypeId in (1,2,3,11,12) then 'Card' when txn.PaymentTypeId in (10) then 'Amex' when txn.PaymentTypeId in (4,5) then 'ACH' else cast(txn.PaymentTypeId as nvarchar(max)) end

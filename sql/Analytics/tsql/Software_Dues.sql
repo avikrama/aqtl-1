@@ -1,3 +1,4 @@
+
 declare @start as date = '2014-01-01', @now as date, @end as date ;
 
 set @now = getdate()

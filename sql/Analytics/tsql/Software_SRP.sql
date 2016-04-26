@@ -1,3 +1,4 @@
+
 declare @start as date = '2014-01-01', @now as date, @end as date ;
 
 set @now = getdate()
@@ -13,7 +14,7 @@ where
 	txn.PostDate_R between @start and @end
 	and txn.ProcessorId not in (14,16)
 	and txn.TransactionCycleId in (1)
-	and c.Vertical in ('Dues')
+	and c.Vertical in ('SRP')
 group by
 cast(dateadd(d,  0, dateadd(d, -1 , dateadd(mm, (year(txn.PostDate_r) - 1900) * 12 + month(txn.PostDate_r) , 0))) as date) , 
 	isnull(c.SoftwareName,'Non-Affiliated') 

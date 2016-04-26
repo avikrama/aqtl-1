@@ -18,3 +18,26 @@ begin
     return dynsql2;
 end
 $$
+
+//
+
+create or replace function xtab (ttable varchar, rrow varchar, col varchar, cell varchar, celldatatype varchar) returns varchar language plpgsql as $$
+declare
+    column_names varchar;
+    final_query varchar;
+    columns varchar;
+begin
+    -- 1. get the columns
+    column_names = 'select string_agg(distinct '||col||'||'' '||celldatatype||''','','' order by '||col||'||'' '||celldatatype||''') from '||ttable||';';
+    execute column_names into columns;
+    -- 2. set up the crosstab query
+    final_query = 'select * from crosstab (
+			''select '||rrow||','||col||','||cell||' from '||ttable||' group by 1,2 order by 1,2'',
+			''select distinct '||col||' from '||ttable||' order by 1''
+			)	as ct ('||rrow||' varchar,'||columns||');';
+    return final_query;
+end
+$$
+
+
+

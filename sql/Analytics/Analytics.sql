@@ -1,1 +1,4 @@
-select * from ETLStaging..FinanceAnalytics
+select 
+	* 
+from 
+	analytics

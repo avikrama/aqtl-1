@@ -5,15 +5,6 @@ set @now = getdate()
 set @start = '2010-01-01'--'2013-01-01'--'2016-02-29'--'2013-01-01'--dateadd(mm,(year(@now)- 1900) * 12 + month(@now) - 1 -1 , 0) 
 set @end = dateadd(d,-1 , dateadd(mm,(year(@now)- 1900) * 12 + month(@now)- 1 , 0))  
 
-if object_id('tempdb..#Cycle') is not null drop table #Cycle
-select * into #Cycle from (
-	select 1 TransactionCycleId,	'Gross' Type union
-	select 3,	'Net' union
-	select 4,	'Net' union
-	select 9,	'Net' union
-	select 16,	'Net' 
-) src
-
 if object_id('tempdb..#Billing') is not null drop table #Billing
 select * into #Billing from (
 select Year, Month, Date, PlatformId, Vertical, SoftwareName, ParentAccountId, ParentName,
@@ -49,7 +40,8 @@ select year(txn.PostDate_R) Year, month(txn.PostDate_R) Month, cast(dateadd(d,  
 	sum(case when cycle.Type in ('Gross') then txn.Amount else 0 end) TPV, sum(case when cycle.Type in ('Gross') then txn.Amount else 0 end * fx.Rate) TPV_USD, sum(case when cycle.Type in ('Gross','Net')  then txn.Amount else 0 end) TPV_Net,sum(case when cycle.Type in ('Gross','Net')  then txn.Amount else 0 end * fx.Rate) TPV_Net_USD,
 	sum(case when txn.PaymentTypeId in (1,2,3,11,12) and cycle.Type in ('Gross') then txn.Amount when txn.PaymentTypeId in (10) and txn.ProcessorId in (22) and txn.Ref_BatchTypeId in (1) /* Amex , Bucket , Vantiv = Processing */ and cycle.Type in ('Gross')  then txn.Amount else 0 end * fx.Rate) Card_Volume_USD,
 	sum(case when txn.PaymentTypeId in (1,2,3,11,12) and cycle.Type in ('Gross','Net') then txn.Amount when txn.PaymentTypeId in (10) and txn.ProcessorId in (22) and txn.Ref_BatchTypeId in (1) /* Amex , Bucket , Vantiv = Processing */ and cycle.Type in ('Gross','Net')  then txn.Amount else 0 end * fx.Rate) Card_Volume_Net_USD,
-	sum(case when cycle.Type in ('Gross')  then 1 else 0 end) as Txn_Count,
+	--sum(case when cycle.Type in ('Gross')  then 1 else 0 end) as Txn_Count,
+	count(distinct(case when cycle.Type in ('Gross') then cast(left(txn.IdClassId, charindex(':', txn.IdClassId) -1 ) as varchar) + cast(txn.TransactionCycleId as varchar) else null end )) Txn_Count,      
 	sum(case when cycle.Type in ('Gross','Net') then txn.AmtNetConvFee else 0 end) as Convenience_Fee, sum(case when cycle.Type in ('Gross','Net') then txn.AmtNetPropFee else 0 end) as Property_Fee, 
 	sum(case when cycle.Type in ('Gross') then txn.AmtNetConvFee else 0 end * fx.Rate) as Convenience_Fee_USD, sum(case when cycle.Type in ('Gross') then txn.AmtNetPropFee else 0 end * fx.Rate) as Property_Fee_USD,
 	sum(case when cycle.Type in ('Gross','Net') then txn.AmtNetConvFee else 0 end * fx.Rate) as Convenience_Fee_Net_USD, sum(case when cycle.Type in ('Gross','Net') then txn.AmtNetPropFee else 0 end * fx.Rate) as Property_Fee_Net_USD,
@@ -75,7 +67,7 @@ group by year(txn.PostDate_R), month(txn.PostDate_R), cast(dateadd(d,  0, datead
 	case  when pt.Name in ('Visa','Master Card','Discover','Visa Debit','MC Debit') then 'Card' when pt.Name in ('eCheck','Scan') then 'ACH_Scan'  when pt.Name in ('American Express') then case when txn.ProcessorId in (22) and txn.Ref_BatchTypeId in (1) then 'AmEx-Processing' else 'AmEx' end  when pt.name in ('Cash') then 'Cash'     end ,
 	cur.CharCode
 			 
-if object_id('tempdb..#BaseMPR') is not null drop table #BaseMPR   
+if object_id('tempdb..#MPRBase') is not null drop table #MPRBase   
 select isnull(txn.Year, billing.Year) Year, isnull(txn.Month, billing.Month) Month, 
 	cast(isnull(txn.Date, billing.Date) as varchar) Date, 
 	isnull(txn.PlatformId,billing.PlatformId) PlatformId,isnull(txn.Gateway_Type,'YapProcessing') Gateway,
@@ -88,7 +80,7 @@ select isnull(txn.Year, billing.Year) Year, isnull(txn.Month, billing.Month) Mon
 	sum( isnull(txn.Property_Fee_Net_USD,0) ) Net_Settled_Fee_Net_USD,sum( isnull(txn.Convenience_Fee_Net_USD,0) ) as Convenience_Fee_Net_USD,
 	sum( isnull(txn.Credit_Card_USD,0) ) Credit_Card_USD, sum(isnull(txn.Debit_Card_USD, 0) ) Debit_Card_USD, sum(isnull(txn.Amex_Processing_USD,0)) Amex_Processing_USD,
 	sum( isnull(txn.Credit_Card_Net_USD,0) ) Credit_Card_Net_USD, sum(isnull(txn.Debit_Card_Net_USD, 0) ) Debit_Card_Net_USD, sum(isnull(txn.Amex_Processing_Net_USD,0)) Amex_Processing_Net_USD
-	into #BaseMPR
+	into #MPRBase
 from
 	#txn Txn    
 	full outer join #Billing billing on billing.Year = txn.Year and billing.Month = txn.Month  and billing.PlatformId = txn.PlatformId and billing.ParentAccountId = txn.ParentAccountId and txn.Fee_Payment_Type = 'PropertyPaid'  
@@ -99,6 +91,7 @@ group by
 	isnull(txn.PlatformId,billing.PlatformId), isnull(txn.Gateway_Type,'YapProcessing') ,
 	isnull(txn.Vertical,billing.Vertical) , coalesce(txn.SoftwareName,billing.SoftwareName,'Non-Affiliated') , isnull(txn.ParentAccountId,billing.ParentAccountId) ,isnull(txn.ParentName,billing.ParentName) , 
 	isnull(txn.Fee_Payment_Type,'PropertyPaid') ,isnull(txn.Payment_Type,billing.Payment_Type) ,isnull(txn.Currency,'USD')
+
 
 
 --select * from #BaseMPR 
