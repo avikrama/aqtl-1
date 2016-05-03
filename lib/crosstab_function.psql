@@ -39,5 +39,120 @@ begin
 end
 $$
 
+column_names = 'select string_agg(distinct  '||col||'||'' '||celldatatype||''','','' order by '||col||'||'' '||celldatatype||''') from '||ttable||';';
+
+
+column_names = 'select string_agg(distinct "'||col||'"||'' '||celldatatype||''','','' order by "'||col||'"||'' '||celldatatype||''') from '||ttable||';';
+
+
+
+column_names =  'select string_agg(distinct ' ||col|| '    ||'' 
+        '||celldatatype||''','','' order by 
+        ' ||col|| '    ||'' 
+    '||celldatatype||''') from '||ttable||';';
+
+
+
+CREATE OR REPLACE FUNCTION get_crosstab_statement(tablename character varying, row_header_columns character varying[], pivot_headers_column character varying, pivot_values character varying)
+  RETURNS character varying AS
+$BODY$
+--returns the sql statement to use for pivoting the table
+--based on: http://www.cureffi.org/2013/03/19/automatically-creating-pivot-table-column-names-in-postgresql/
+--based on: http://stackoverflow.com/questions/4104508/postgres-dynamic-column-headers-from-another-table
+--based on: http://www.postgresonline.com/journal/categories/24-tablefunc
+
+DECLARE
+    arrayname CONSTANT character varying := 'r';
+
+    row_headers_simple character varying;
+    row_headers_quoted character varying;
+    row_headers_castdown character varying;
+    row_headers_castup character varying;
+    row_header_count smallint;
+    row_header record;
+
+    pivot_values_columnname character varying;
+    pivot_values_datatype character varying;
+    pivot_headers_definition character varying;
+    pivot_headers_simple character varying;
+
+    sql_row_headers character varying;
+    sql_pivot_headers character varying;
+    sql_crosstab_result character varying;
+
+BEGIN
+    -- 1. create row header definitions
+    row_headers_simple   :=         array_to_string(row_header_columns, ', ');
+    row_headers_quoted   := '''' || array_to_string(row_header_columns, ''', ''') || '''';
+    row_headers_castdown :=         array_to_string(row_header_columns, '::text, ') || '::text';
+
+    row_header_count     := 0;
+    sql_row_headers      := 'SELECT column_name, data_type
+                            FROM information_schema.columns
+                            WHERE table_name = ''' || tablename || ''' AND column_name IN (' || row_headers_quoted || ')';
+    FOR row_header IN EXECUTE sql_row_headers LOOP
+        row_header_count := row_header_count + 1;
+        row_headers_castup := COALESCE(row_headers_castup || ', ', '') || arrayname || '[' || row_header_count || ']::' || row_header.data_type || ' AS ' || row_header.column_name;
+    END LOOP;
+
+    -- 2. retrieve basic column name in case an aggregate function is used
+    SELECT coalesce(substring(pivot_values FROM '.*\((.*)\)'), pivot_values)
+    INTO pivot_values_columnname;
+
+    -- 3. retrieve pivot values datatype
+    SELECT data_type
+    FROM information_schema.columns
+    WHERE table_name = tablename AND column_name = pivot_values_columnname
+    INTO pivot_values_datatype;
+
+    -- 4. retrieve list of pivot column names.
+    sql_pivot_headers := 'SELECT string_agg(DISTINCT quote_ident(' || pivot_headers_column || '), '', '' ORDER BY quote_ident(' || pivot_headers_column || ')) as names, string_agg(DISTINCT quote_ident(' || pivot_headers_column || ') || '' ' || pivot_values_datatype || ''', '', '' ORDER BY quote_ident(' || pivot_headers_column || ') || '' ' || pivot_values_datatype || ''') as definitions FROM ' || tablename || ';';
+    EXECUTE sql_pivot_headers INTO pivot_headers_simple, pivot_headers_definition;
+
+    -- 5. set up the crosstab query
+    sql_crosstab_result := 'SELECT  ' || replace (row_headers_castup || ', ' || pivot_headers_simple, ', ', ',
+        ') || '
+FROM    crosstab (
+        ''SELECT ARRAY[' || row_headers_castdown || '] AS ' || arrayname || ', ' || pivot_headers_column || ', ' || pivot_values || '
+        FROM ' || tablename || '
+        GROUP BY ' || row_headers_simple || ', ' || pivot_headers_column || (CASE pivot_values_columnname=pivot_values WHEN true THEN ', ' || pivot_values ELSE '' END) || '
+        ORDER BY ' || row_headers_simple || '''
+    ,
+        ''SELECT DISTINCT ' || pivot_headers_column || '
+        FROM ' || tablename || '
+        ORDER BY ' || pivot_headers_column || '''
+    ) AS newtable (
+        ' || arrayname || ' varchar[]' || ',
+        ' || replace(pivot_headers_definition, ', ', ',
+        ') || '
+    );';
+
+    RETURN sql_crosstab_result;
+ END
+
+ $BODY$
+  LANGUAGE plpgsql STABLE
+  COST 100;
+
+
+
+create or replace function eval( sql  text ) returns text as $$
+declare
+  as_txt  text;
+begin
+  if  sql is null  then  return null ;  end if ;
+  execute  sql  into  as_txt ;
+  return  as_txt ;
+end;
+$$ language plpgsql
+;
+
+create or replace function eval2( sql  text ) returns setof record as $$
+begin
+  return query execute sql ;
+end;
+$$ language plpgsql
+;
+
 
 
