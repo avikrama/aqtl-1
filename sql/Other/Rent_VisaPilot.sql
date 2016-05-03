@@ -29,6 +29,11 @@ where
 	'95-26894334',	-- Home Properties MRI
 	'95-55693023' 	-- Warren Properties MRI
 	--'05-18534018' 	-- Elon Management
+	'55-12312695',	--	Village Green
+	'75-27206950',	--	Breeden Property Management
+	'25-38257142',	--	Mahaffey Company
+	'06-11241364',	--	ECI Management Corporation
+	'36-13268335'	--	Freeman Webb Company Realtors	
 	)
 group by
 	c.PlatformId, c.ParentAccountId, c.ParentName
