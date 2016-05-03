@@ -27,7 +27,7 @@ where
 	and c.ParentAccountId in (
 	'65-12836930',	-- Prometheus Real Estate Group
 	'95-26894334',	-- Home Properties MRI
-	'95-55693023' 	-- Warren Properties MRI
+	'95-55693023', 	-- Warren Properties MRI
 	--'05-18534018' 	-- Elon Management
 	'55-12312695',	--	Village Green
 	'75-27206950',	--	Breeden Property Management
