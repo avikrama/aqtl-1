@@ -31,20 +31,20 @@
 		#0 22 7,10 * * skilbjo cd $ANALYTICS ; node TPV_p.js >/dev/null
 		#0 22 7 * * skilbjo cd $ANALYTICS ; node TPV_avg_t1.js >/dev/null
 		#0 22 7 * * skilbjo cd $ANALYTICS ; node TPV_avg_t2.js >/dev/null
-		#0 22 7 * * skilbjo cd $ANALYTICS ; node IntlMix.js >/dev/null
-		#0 22 7 * * skilbjo cd $ANALYTICS ; node Software_Rent.js >/dev/null
-		#0 22 7 * * skilbjo cd $ANALYTICS ; node Software_VRP.js >/dev/null
-		#0 22 7 * * skilbjo cd $ANALYTICS ; node Software_SRP.js >/dev/null
-		#0 22 7 * * skilbjo cd $ANALYTICS ; node Software_Dues.js >/dev/null
-		#0 22 7 * * skilbjo cd $ANALYTICS ; node Software_Inn.js >/dev/null
-		#0 22 7 * * skilbjo cd $ANALYTICS ; node Software_NonProfit.js >/dev/null
+		0 22 3 * * skilbjo cd $ANALYTICS ; node IntlMix.js >/dev/null
+		0 22 3 * * skilbjo cd $ANALYTICS ; node Software_Rent.js >/dev/null
+		0 22 3 * * skilbjo cd $ANALYTICS ; node Software_VRP.js >/dev/null
+		0 22 3 * * skilbjo cd $ANALYTICS ; node Software_SRP.js >/dev/null
+		0 22 3 * * skilbjo cd $ANALYTICS ; node Software_Dues.js >/dev/null
+		0 22 3 * * skilbjo cd $ANALYTICS ; node Software_Inn.js >/dev/null
+		0 22 3 * * skilbjo cd $ANALYTICS ; node Software_NonProfit.js >/dev/null
 
 	## COGS
 		0 12 6 * * skilbjo cd $FINANCE ; node COGS_Model.js >/dev/null
 
 	## Finance
-		0 20 7 * * skilbjo cd $FINANCE ; node Vantiv_Bucket_Analysis.js >/dev/null
-		0 20 7 * * skilbjo cd $FINANCE ; node MIDs_Upload.js >/dev/null
+		0 20 3 * * skilbjo cd $FINANCE ; node Vantiv_Bucket_Analysis.js >/dev/null
+		0 20 3 * * skilbjo cd $FINANCE ; node MIDs_Upload.js >/dev/null
 
 	## Rent & Account Management reports
 		0 22 3 * * skilbjo cd $OTHER ; node Rent_VisaPilot.js >/dev/null
@@ -68,8 +68,8 @@
 		25 12 4 * * skilbjo cd $DIMENSION"/Validation" ; node Batch_Validation_Reports.js >/dev/null
 
 	## Commissions
-		0 21 4 * * skilbjo cd $FINANCE"/HA" ; node Batch_HA_Reports.js >/dev/null	
-		15 14 5 * * skilbjo cd $FINANCE"/Commissions" ; node Batch_Commission_Reports.js >/dev/null	
+		0 21 10 * * skilbjo cd $FINANCE"/HA" ; node Batch_HA_Reports.js >/dev/null	
+		15 14 10 * * skilbjo cd $FINANCE"/Commissions" ; node Batch_Commission_Reports.js >/dev/null	
 
 	
 

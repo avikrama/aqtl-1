@@ -118,7 +118,7 @@ where
 	and txn.ProcessorId not in (14,16)
 	and txn.PostDate_R between @start and @end
 	and txn.PlatformId = 3	
-	and hapt.ProductType in ('PPS')
+	and hapt.ProductType in ('PPS','PPB')
 group by  	
 	c1.PropertyOwnerAccountId, c1.PropertyOwnerName, c1.SignUpType ,c1.Email , c1.StreetAddress, c1.City,c1.State, c1.Zip,
 	c.ChildAccountId , c.ChildName  

@@ -1,67 +1,23 @@
--- // Analytics Data tab for Analytics Dashboard
-declare
----- Query Helpers
-@paymentTypes as nvarchar(max),@Verticals as nvarchar(max),
----- Queries
-@TPV_PaymentType as nvarchar(max), 
-@TPV_Vertical as nvarchar(max)
-;
-select @paymentTypes = stuff((select ',' + quotename(colName) from (
-   select distinct(PaymentTypeGroup) as colName 
-   from ETLStaging..FinanceAnalytics
-   union all
-   select 'GatewayOnly' as colName
-       ) sub order by colName for xml path(''), type).value('.', 'nvarchar(max)'),1,1,'')
-select @Verticals = stuff((select ',' + quotename(colName) from (
-	select distinct(Vertical) as colName 
-	from ETLStaging..FinanceAnalytics
-	union all
-	select 'GatewayOnly' as colName
-       ) sub order by colName for xml path(''), type).value('.', 'nvarchar(max)'),1,1,'')
-set @TPV_PaymentType = '
 with TPV as (
-select *  from ( select Year, Month, cast(dateadd(d, -1 , dateadd(mm, (Year - 1900) * 12 + Month , 0)) as date) Date,  
-       PaymentTypeGroup, sum(Card_Volume_USD) Card_Volume_USD
-from   ETLStaging..FinanceAnalytics
-where  Gateway in (''YapProcessing'')
-group by Year, Month,  cast(dateadd(d, -1 , dateadd(mm, (Year - 1900) * 12 + Month , 0)) as date), 
-      PaymentTypeGroup
-union all
-select Year, Month, cast(dateadd(d, -1 , dateadd(mm, (Year - 1900) * 12 + Month , 0)) as date) Date,  
-       ''GatewayOnly'' as PaymentTypeGroup, sum(Card_Volume_USD) Card_Volume_USD
-from   ETLStaging..FinanceAnalytics
-where  Gateway in (''GatewayOnly'')
-group by Year, Month,  cast(dateadd(d, -1 , dateadd(mm, (Year - 1900) * 12 + Month , 0)) as date)
-      ) sub
-pivot ( 
-	sum(sub.Card_Volume_USD)
-    for [PaymentTypeGroup] in ('+@paymentTypes+') 
-) as PivotTable )
-select Date , '+@paymentTypes+'
-from TPV;' 
-set @TPV_Vertical = '
-with TPV as (
-select *  from (
-select Year, Month,  cast(dateadd(d, -1 , dateadd(mm, (Year - 1900) * 12 + Month , 0)) as date) Date,  
-       Vertical,   sum(Card_Volume_USD) Card_Volume_USD
-from   ETLStaging..FinanceAnalytics
-where  Gateway in (''YapProcessing'')
-group by  Year, Month, cast(dateadd(d, -1 , dateadd(mm, (Year - 1900) * 12 + Month , 0)) as date), 
-      Vertical
-union all
-select	Year, Month, cast(dateadd(d, -1 , dateadd(mm, (Year - 1900) * 12 + Month , 0)) as date) Date,
-	''GatewayOnly'' as Vertical, sum(Card_Volume_USD)
-from
-	ETLStaging..FinanceAnalytics
-where
-	Gateway in (''GatewayOnly'')
-group by Year, Month, cast(dateadd(d, -1 , dateadd(mm, (Year - 1900) * 12 + Month , 0)) as date)
-	 ) sub
-pivot (
-	sum(sub.Card_Volume_USD)
-    for [Vertical] in ('+@Verticals+')
-) as PivotTable )
-select Date , '+@Verticals+'
-from TPV' 
-
-exec sp_executesql @TPV_Vertical
+-- select * from get_crosstab_statement('analytics',ARRAY['date'],'vertical','sum(card_volume_usd)')  ;
+select  
+  r[1]::date AS date, "Dues", "HA", "Intl", "Inn", "NonProfit", "Rent", "SRP", "VRP" 
+from    crosstab ('
+  select 
+    ARRAY[date::text] AS r, 
+    vertical, 
+    sum(card_volume_usd)         
+  from analytics
+  where Gateway not in (''GatewayOnly'')      
+  group by date, 
+    vertical         
+  order by date' , '
+    select distinct vertical         
+    from analytics         
+    order by vertical'     
+  ) AS newtable (r varchar[],"Dues" numeric,"Intl" numeric, "HA" numeric, "Inn" numeric, "NonProfit" numeric, "Rent" numeric, "SRP" numeric, "VRP" numeric)
+)
+select TPV.*
+from 
+  TPV 
+  ;

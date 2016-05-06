@@ -1,6 +1,6 @@
-with month as ( select (date_trunc('Month',current_date) - interval '1 day')::DATE date )
-
-
+with month as ( 
+	select (date_trunc('Month',current_date) - interval '1 day')::DATE date 
+)
 select  	
 	mids.Vertical, Network, Card_Type, Issuer_Type,     	
 	sum(Txn_Count) txn_count, sum(Txn_Amount) txn_amount, sum(Interchange) interchange
