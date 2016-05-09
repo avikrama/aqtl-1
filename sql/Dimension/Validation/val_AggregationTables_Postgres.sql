@@ -1,6 +1,6 @@
 with Date as (
---    select (date_trunc('Month',current_date) - interval '1 day')::DATE as StartDate
-			select '2016-03-31'::date as StartDate
+   select (date_trunc('Month',current_date) - interval '1 day')::DATE as StartDate
+			-- select '2016-03-31'::date as StartDate
 ), Analytics as (
 			select /*PlatformId,*/ sum(TPV_USD) TPV_USD, sum(Card_Volume_USD) Card_Volume_USD, 0 Revenue_USD
 			from  Analytics
