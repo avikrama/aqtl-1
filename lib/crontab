@@ -31,13 +31,13 @@
 		#0 22 7,10 * * skilbjo cd $ANALYTICS ; node TPV_p.js >/dev/null
 		#0 22 7 * * skilbjo cd $ANALYTICS ; node TPV_avg_t1.js >/dev/null
 		#0 22 7 * * skilbjo cd $ANALYTICS ; node TPV_avg_t2.js >/dev/null
-		0 22 3 * * skilbjo cd $ANALYTICS ; node IntlMix.js >/dev/null
-		0 22 3 * * skilbjo cd $ANALYTICS ; node Software_Rent.js >/dev/null
-		0 22 3 * * skilbjo cd $ANALYTICS ; node Software_VRP.js >/dev/null
-		0 22 3 * * skilbjo cd $ANALYTICS ; node Software_SRP.js >/dev/null
-		0 22 3 * * skilbjo cd $ANALYTICS ; node Software_Dues.js >/dev/null
-		0 22 3 * * skilbjo cd $ANALYTICS ; node Software_Inn.js >/dev/null
-		0 22 3 * * skilbjo cd $ANALYTICS ; node Software_NonProfit.js >/dev/null
+		50 10 10 * * skilbjo cd $ANALYTICS ; node IntlMix.js >/dev/null
+		50 10 10 * * skilbjo cd $ANALYTICS ; node Software_Rent.js >/dev/null
+		50 10 10 * * skilbjo cd $ANALYTICS ; node Software_VRP.js >/dev/null
+		50 10 10 * * skilbjo cd $ANALYTICS ; node Software_SRP.js >/dev/null
+		50 10 10 * * skilbjo cd $ANALYTICS ; node Software_Dues.js >/dev/null
+		50 10 10 * * skilbjo cd $ANALYTICS ; node Software_Inn.js >/dev/null
+		50 10 10 * * skilbjo cd $ANALYTICS ; node Software_NonProfit.js >/dev/null
 
 	## COGS
 		0 12 6 * * skilbjo cd $FINANCE ; node COGS_Model.js >/dev/null

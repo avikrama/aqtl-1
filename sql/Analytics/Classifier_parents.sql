@@ -5,6 +5,10 @@ with Dates as (
 	date_part('year',(date_trunc('Month',current_date) - interval '1 day')::date) as CurrentYear,
 	date_part('month',(date_trunc('Month',current_date) - interval '1 day')::date) as CurrentMonth
 )
+, Filter as (
+	select 'Rent'::text as Vertical,
+	'Organic'::text as Tag
+)
 , Parents as (
 	select 
 		Year, Vertical, ParentName, sum(TPV_USD) TPV_USD
@@ -25,7 +29,7 @@ with Dates as (
 	group by Vertical, ParentName
 ), Classifier as (
 	select 
-		Vertical,
+		Vertical, ParentName ,
 		case when ( PriorYear < CurrentYear or PriorYear = CurrentYear ) and PriorYear <> 0 then 'Organic'
 			when PriorYear > CurrentYear and CurrentYear <> 0 then 'Deceleration'
 			when CurrentYear = 0 then 'Lost'
@@ -34,10 +38,16 @@ with Dates as (
 	from
 		ParentYear
 	group by
-		Vertical,
+		Vertical, ParentName,
 		case when ( PriorYear < CurrentYear or PriorYear = CurrentYear ) and PriorYear <> 0 then 'Organic'
 			when PriorYear > CurrentYear and CurrentYear <> 0 then 'Deceleration'
 			when CurrentYear = 0 then 'Lost'
 			else 'New' end 
-
-) select * from Classifier
+)
+select 
+	* 
+from 
+	Classifier
+where 
+		Vertical in ( select Vertical from Filter )
+		and Tag in ( select Tag from Filter )
