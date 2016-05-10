@@ -5,7 +5,7 @@ var
 	transform = flag ? require('./../../../transform').transform 	: require('./../../transform').transform,	
 	load = 			flag ? require('./../../../load').load 						: require('./../../load').load,		
 	db = 'finance', // crostoli or finance
-	html = false, // results as a formatted HTML table?
+	html = true, // results as a formatted HTML table?
 	file = path.basename(__filename.replace(/.js$/,'')),
 	dir = __dirname.split(path.sep),
   folder = flag ? dir[dir.length-2] : dir.pop() ,

@@ -28,9 +28,11 @@
 		0 22 3,10 * * skilbjo cd $ANALYTICS ; node TPV_Vertical_m_ytd_v.js >/dev/null
 		0 22 3,10 * * skilbjo cd $ANALYTICS ; node TPV_PaymentType_m_ytd_v.js >/dev/null
 		0 22 3 * * skilbjo cd $ANALYTICS ; node TPV_CardVolume_v.js >/dev/null
-		0 22 3,15 * * skilbjo cd $ANALYTICS ; node TPV_p.js >/dev/null
-		0 22 3 * * skilbjo cd $ANALYTICS ; node TPV_avg_t1.js >/dev/null
-		0 22 3 * * skilbjo cd $ANALYTICS ; node TPV_avg_t2.js >/dev/null
+
+		0 22 3 * * skilbjo cd $ANALYTICS ; node ODLN.js >/dev/null
+		0 22 3 * * skilbjo cd $ANALYTICS ; node ODLN_parents.js >/dev/null
+		0 22 3 * * skilbjo cd $ANALYTICS ; node Merchant_counts.js >/dev/null			
+
 		0 10 3 * * skilbjo cd $ANALYTICS ; node IntlMix.js >/dev/null
 		0 10 3 * * skilbjo cd $ANALYTICS ; node Software_Rent.js >/dev/null
 		0 10 3 * * skilbjo cd $ANALYTICS ; node Software_VRP.js >/dev/null
@@ -73,7 +75,7 @@
 
 	## Commissions
 		0 21 10 * * skilbjo cd $FINANCE"/HA" ; node Batch_HA_Reports.js >/dev/null	
-		15 14 10 * * skilbjo cd $FINANCE"/Commissions" ; node Batch_Commission_Reports.js >/dev/null	
+		15 14 15 * * skilbjo cd $FINANCE"/Commissions" ; node Batch_Commission_Reports.js >/dev/null	
 
 	
 
