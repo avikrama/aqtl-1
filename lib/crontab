@@ -32,6 +32,8 @@
 		0 22 3 * * skilbjo cd $ANALYTICS ; node ODLN.js >/dev/null
 		0 22 3 * * skilbjo cd $ANALYTICS ; node ODLN_parents.js >/dev/null
 		0 22 3 * * skilbjo cd $ANALYTICS ; node Merchant_counts.js >/dev/null			
+		0 22 3 * * skilbjo cd $ANALYTICS ; node Merchant_counts_child.js >/dev/null			
+
 
 		0 10 3 * * skilbjo cd $ANALYTICS ; node IntlMix.js >/dev/null
 		0 10 3 * * skilbjo cd $ANALYTICS ; node Software_Rent.js >/dev/null
