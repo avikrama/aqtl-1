@@ -24,20 +24,20 @@
 
 ##### Monthly #####
 	## Analytics
-		#0 22 7 * * skilbjo cd $ANALYTICS ; node Analytics.js >/dev/null
-		#0 22 7,10 * * skilbjo cd $ANALYTICS ; node TPV_Vertical_m_ytd_v.js >/dev/null
-		#0 22 7,10 * * skilbjo cd $ANALYTICS ; node TPV_PaymentType_m_ytd_v.js >/dev/null
-		#0 22 7 * * skilbjo cd $ANALYTICS ; node TPV_CardVolume_v.js >/dev/null
-		#0 22 7,10 * * skilbjo cd $ANALYTICS ; node TPV_p.js >/dev/null
-		#0 22 7 * * skilbjo cd $ANALYTICS ; node TPV_avg_t1.js >/dev/null
-		#0 22 7 * * skilbjo cd $ANALYTICS ; node TPV_avg_t2.js >/dev/null
-		50 10 10 * * skilbjo cd $ANALYTICS ; node IntlMix.js >/dev/null
-		50 10 10 * * skilbjo cd $ANALYTICS ; node Software_Rent.js >/dev/null
-		50 10 10 * * skilbjo cd $ANALYTICS ; node Software_VRP.js >/dev/null
-		50 10 10 * * skilbjo cd $ANALYTICS ; node Software_SRP.js >/dev/null
-		50 10 10 * * skilbjo cd $ANALYTICS ; node Software_Dues.js >/dev/null
-		50 10 10 * * skilbjo cd $ANALYTICS ; node Software_Inn.js >/dev/null
-		50 10 10 * * skilbjo cd $ANALYTICS ; node Software_NonProfit.js >/dev/null
+		0 22 3 * * skilbjo cd $ANALYTICS ; node Analytics.js >/dev/null
+		0 22 3,10 * * skilbjo cd $ANALYTICS ; node TPV_Vertical_m_ytd_v.js >/dev/null
+		0 22 3,10 * * skilbjo cd $ANALYTICS ; node TPV_PaymentType_m_ytd_v.js >/dev/null
+		0 22 3 * * skilbjo cd $ANALYTICS ; node TPV_CardVolume_v.js >/dev/null
+		0 22 3,15 * * skilbjo cd $ANALYTICS ; node TPV_p.js >/dev/null
+		0 22 3 * * skilbjo cd $ANALYTICS ; node TPV_avg_t1.js >/dev/null
+		0 22 3 * * skilbjo cd $ANALYTICS ; node TPV_avg_t2.js >/dev/null
+		0 10 3 * * skilbjo cd $ANALYTICS ; node IntlMix.js >/dev/null
+		0 10 3 * * skilbjo cd $ANALYTICS ; node Software_Rent.js >/dev/null
+		0 10 3 * * skilbjo cd $ANALYTICS ; node Software_VRP.js >/dev/null
+		0 10 3 * * skilbjo cd $ANALYTICS ; node Software_SRP.js >/dev/null
+		0 10 3 * * skilbjo cd $ANALYTICS ; node Software_Dues.js >/dev/null
+		0 10 3 * * skilbjo cd $ANALYTICS ; node Software_Inn.js >/dev/null
+		0 10 3 * * skilbjo cd $ANALYTICS ; node Software_NonProfit.js >/dev/null
 
 	## COGS
 		0 12 6 * * skilbjo cd $FINANCE ; node COGS_Model.js >/dev/null
@@ -61,8 +61,12 @@
 	## Corp Dev
 		#0 23 4 * * skilbjo cd $OTHER ; node HA_Model_Net.js >/dev/null
 		#0 23 4 * * skilbjo cd $OTHER ; node HA_Active_Listings_Gross_All.js >/dev/null	
-		#0 23 4,10 * * skilbjo cd $ANALYTICS ; node HA_Gross.js >/dev/null	
-		#0 23 4,10 * * skilbjo cd $ANALYTICS ; node HA_Net.js >/dev/null		
+		0 23 3,15 * * skilbjo cd $ANALYTICS ; node HA_Gross.js >/dev/null	
+		0 23 3,15 * * skilbjo cd $ANALYTICS ; node HA_Net.js >/dev/null		
+		34 11 10 * * skilbjo cd $ANALYTICS ; node HA_Listings.js >/dev/null		
+		34 11 10 * * skilbjo cd $ANALYTICS ; node HA_Listings_Month.js >/dev/null
+		34 11 10 * * skilbjo cd $ANALYTICS ; node HA_Listings_PaymentType.js >/dev/null
+		34 11 10 * * skilbjo cd $ANALYTICS ; node HA_Listings_Month_PaymentType.js >/dev/null						
 
 	## Dimension
 		25 12 4 * * skilbjo cd $DIMENSION"/Validation" ; node Batch_Validation_Reports.js >/dev/null

@@ -11,7 +11,7 @@ with Dates as (
 )
 , Parents as (
 	select 
-		Year, Vertical, ParentName, sum(TPV_USD) TPV_USD
+		Year, Vertical, SoftwareName, ParentName, sum(TPV_USD) TPV_USD
 	from
 		top_data
 	where
@@ -19,35 +19,37 @@ with Dates as (
 		and Year between ( select PriorYear from Dates ) and ( select CurrentYear from Dates )
 		and Month between (1) and ( select CurrentMonth from Dates )
 	group by
-		Year, Vertical, ParentName
+		Year, Vertical, SoftwareName, ParentName
 ), ParentYear as (
-	select Vertical, ParentName, 
+	select Vertical, SoftwareName, ParentName, 
 		sum(case when Year in (select PriorYear from Dates) then TPV_USD else 0 end) as PriorYear,
 		sum(case when Year in (select CurrentYear from Dates) then TPV_USD else 0 end) as CurrentYear
 	from
 		Parents
-	group by Vertical, ParentName
+	group by Vertical, SoftwareName, ParentName
 ), Classifier as (
 	select 
-		Vertical, ParentName ,
+		Vertical, 
 		case when ( PriorYear < CurrentYear or PriorYear = CurrentYear ) and PriorYear <> 0 then 'Organic'
 			when PriorYear > CurrentYear and CurrentYear <> 0 then 'Deceleration'
 			when CurrentYear = 0 then 'Lost'
 			else 'New' end as Tag,
-		sum(PriorYear) as PriorYear, sum(CurrentYear) as CurrentYear
+		SoftwareName, ParentName ,
+		sum(PriorYear) as PriorYear, sum(CurrentYear) as CurrentYear, sum(CurrentYear) - sum(PriorYear) as Delta
 	from
 		ParentYear
 	group by
-		Vertical, ParentName,
+		Vertical, ParentName, SoftwareName,
 		case when ( PriorYear < CurrentYear or PriorYear = CurrentYear ) and PriorYear <> 0 then 'Organic'
 			when PriorYear > CurrentYear and CurrentYear <> 0 then 'Deceleration'
 			when CurrentYear = 0 then 'Lost'
 			else 'New' end 
 )
 select 
-	* 
+	*
 from 
 	Classifier
-where 
-		Vertical in ( select Vertical from Filter )
-		and Tag in ( select Tag from Filter )
+--where 
+--		Vertical in ( select Vertical from Filter )
+--		and Tag in ( select Tag from Filter )
+order by Delta desc
