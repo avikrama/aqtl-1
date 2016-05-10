@@ -65,8 +65,8 @@
 		0 23 3,15 * * skilbjo cd $ANALYTICS ; node HA_Net.js >/dev/null		
 		34 11 10 * * skilbjo cd $ANALYTICS ; node HA_Listings.js >/dev/null		
 		34 11 10 * * skilbjo cd $ANALYTICS ; node HA_Listings_Month.js >/dev/null
-		34 11 10 * * skilbjo cd $ANALYTICS ; node HA_Listings_PaymentType.js >/dev/null
-		34 11 10 * * skilbjo cd $ANALYTICS ; node HA_Listings_Month_PaymentType.js >/dev/null						
+		40 11 10 * * skilbjo cd $ANALYTICS ; node HA_Listings_ProductType.js >/dev/null
+		40 11 10 * * skilbjo cd $ANALYTICS ; node HA_Listings_Month_ProductType.js >/dev/null						
 
 	## Dimension
 		25 12 4 * * skilbjo cd $DIMENSION"/Validation" ; node Batch_Validation_Reports.js >/dev/null
