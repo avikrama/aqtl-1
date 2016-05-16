@@ -6,6 +6,7 @@ with Date as (
 			from  Analytics
 			where Date = ( select StartDate from Date )
 						and Gateway in ('YapProcessing')
+						and PlatformId in (1,2,3)
 						and Vertical not in ('Intl')
 			--group by  PlatformId order by 1
 ), TopData as (
@@ -13,6 +14,7 @@ with Date as (
 			from  Top_Data
 			where Date = ( select StartDate from Date )
 						and Gateway in ('YapProcessing')
+						and PlatformId in (1,2,3)
 						and Vertical not in ('Intl')
 			--group by  PlatformId order by 1
 ), MPR_Base as (
@@ -20,6 +22,7 @@ with Date as (
 			from  MPR_Base
 			where Date = ( select StartDate from Date )
 						and Gateway in ('YapProcessing')
+						and PlatformId in (1,2,3)
 						and Vertical not in ('Intl')
 			--group by  PlatformId order by 1
 ), MPR as (
@@ -27,6 +30,7 @@ with Date as (
 			from  MPR
 			where Date = ( select StartDate from Date )
 						and Gateway in ('YapProcessing')
+						and PlatformId in (1,2,3)
 						and Vertical not in ('Intl')
 			--group by  PlatformId order by 1
 )
