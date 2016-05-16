@@ -10,7 +10,7 @@ select
 from
 	mpr_base
 where date in ( select endd from dates )
-	and vertical not in ('HA-Intl')
+	and vertical not in ('Intl')
 group by
 	Vertical
 union all
@@ -23,5 +23,5 @@ select
 from
 	mpr_base
 where date in ( select endd from dates )
-	and vertical not in ('HA-Intl')
+	and vertical not in ('Intl')
 ;
