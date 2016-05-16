@@ -26,7 +26,7 @@ with Date as (
 						and Vertical not in ('Intl')
 			--group by  PlatformId order by 1
 ), MPR as (
-			select /*PlatformId,*/ sum(TPV_USD) TPV_USD, sum(case when PaymentTypeGroup in ('Card') then TPV_USD else 0 end) Card_Volume_USD, 0 Revenue_USD, sum(Revenue) Revenue_Net_USD
+			select /*PlatformId,*/ sum(TPV_USD) TPV_USD, sum(case when PaymentTypeGroup in ('Card','AmEx-Processing') then TPV_USD else 0 end) Card_Volume_USD, 0 Revenue_USD, sum(Revenue) Revenue_Net_USD
 			from  MPR
 			where Date = ( select StartDate from Date )
 						and Gateway in ('YapProcessing')
