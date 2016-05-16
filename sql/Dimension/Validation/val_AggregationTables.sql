@@ -16,6 +16,7 @@ where
       txn.PostDate_r between @start and @end
       and txn.ProcessorId not in (14,16)
       and txn.TransactionCycleId in (1)
+      and txn.PlatformId in (1,2,3)
 -- group by PlatformId order by PlatformId   
   
 
@@ -25,6 +26,7 @@ select      /*PlatformId,*/ sum(TPV_USD) TPV_USD, sum(Card_Volume_USD) Card_Volu
 from  ETLStaging..FinanceAnalytics
 where Date = @end
       and Gateway in ('YapProcessing')
+      and PlatformId in (1,2,3)
 --group by  PlatformId order by 1
       
 if object_id('tempdb..#TopData') is not null drop table #TopData
@@ -33,6 +35,7 @@ select      /*PlatformId,*/ sum(TPV_USD) TPV_USD, sum(Card_Volume_USD) Card_Volu
 from  ETLStaging..FinanceTopData
 where Date = @end
       and Gateway in ('YapProcessing')
+      and PlatformId in (1,2,3)
 --group by  PlatformId order by 1
 
 if object_id('tempdb..#MPR') is not null drop table #MPR
@@ -41,6 +44,7 @@ select      /*PlatformId,*/ sum(TPV_USD) TPV_USD, sum(Card_Volume_USD) Card_Volu
 from  ETLStaging..FinanceBaseMPR
 where Date = @end
       and Gateway in ('YapProcessing')
+      and PlatformId in (1,2,3)
 --group by  PlatformId order by 1
 
 
