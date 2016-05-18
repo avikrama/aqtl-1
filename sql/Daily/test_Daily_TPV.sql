@@ -88,10 +88,10 @@ group by
      case when txn.ProcessorId not in (14,16) then c.Vertical else 'GtwyOnly' end
 union
 select
-  'lyYTD' as Date, 'ExtrnlGtwy' as Vertical, 25847805 as TPV 
+  'lyYTD' as Date, 'ExtrnlGtwy' as Vertical, 38640425 as TPV 
 union
 select
-  'YTD' as Date , 'ExtrnlGtwy' as Vertical, 39905133 as TPV
+  'YTD' as Date , 'ExtrnlGtwy' as Vertical, 54080448 as TPV
  
 if object_id('tempdb..#txn') is not null drop table #txn
 select * into #txn from (
@@ -151,6 +151,27 @@ select * from #Vertical union all select * from #Total
 exec(@query+';'+@total+';'+@combined)
 
 /* EXTERNAL GATEWAY NUMBERS
+declare @start as date , @end as date , @now as date
+ 
+set @now       = getdate()    -- Today
+set @end       = dateadd(d,-1,@now)  -- Yesterday
+
+select Year, convert(varchar,cast(sum(txn_amount) as money),1) as ExtrnlGatewayTPV
+from ETLStaging..FinanceExtGatewayVolume
+where 
+  Year = 2015 
+  and Month between 1 and month(dateadd(m,-1,@end))
+group by Year
+union all
+select Year, convert(varchar,cast(sum(txn_amount) as money),1) as ExtrnlGatewayTPV
+from ETLStaging..FinanceExtGatewayVolume
+where 
+  Year = 2016
+  and Month between 1 and month(@end)
+group by Year
+
+
+
 select Year, convert(varchar,cast(sum(txn_amount) as money),1) as ExtrnlGatewayTPV
 from ETLStaging..FinanceExtGatewayVolume
 where 
