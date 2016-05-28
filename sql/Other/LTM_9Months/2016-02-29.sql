@@ -1,7 +1,7 @@
 -- Active Listings Query
 declare @start date, @end date, @now as date
  
-set @now	=	2016-02-29
+set @now	=	'2016-02-29'
 set @start	=	dateadd(mm,(year(@now)- 1900) * 12 + month(@now)- 1 - 9 , 0)
 set @end	=	dateadd(d,-1 , dateadd(mm,(year(@now)- 1900) * 12 + month(@now)- 1 , 0))  
 
