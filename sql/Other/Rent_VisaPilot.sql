@@ -1,6 +1,5 @@
-
 declare @now as date, @start as date, @end as date, 
-@PaymentTypeClassifier as nvarchar(max), @PaymentTypeClassifierQuery as nvarchar(max), @Network as nvarchar(max), @months as nvarchar(max), 
+@PaymentTypeClassifier as nvarchar(max), @PaymentTypeClassifierQuery as nvarchar(max),@PilotStartDate as nvarchar(max),@PilotStartDateQuery as nvarchar(max), @Network as nvarchar(max), @months as nvarchar(max), 
 @columns as nvarchar(max), @query as nvarchar(max),
 @tpv as nvarchar(max), @count as nvarchar(max) ;
 
@@ -16,6 +15,8 @@ select @months = stuff((select ',' + quotename(colName) from (
 if object_id('tempdb..#PaymentTypeClassifier') is not null drop table #PaymentTypeClassifier
 create table #PaymentTypeClassifier (PaymentType nvarchar(max), PaymentTypeClassifier nvarchar(max))
 if object_id('tempdb..#DesiredParents') is not null drop table #DesiredParents
+if object_id('tempdb..#PilotStartDate') is not null drop table #PilotStartDate
+create table #PilotStartDate (ParentAccountid nvarchar(max), StartDate date)
 
 select
 	c.PlatformId, c.ParentAccountId, c.ParentName
@@ -80,6 +81,23 @@ select @PaymentTypeClassifier = stuff((select ',' + quotename(colName) from (
 	select  distinct(PaymentTypeClassifier) as colName from #PaymentTypeClassifier 
 ) sub order by colName desc for xml path(''), type).value('.', 'nvarchar(max)'),1,1,'')
 
+set @PilotStartDateQuery = '
+insert into #PilotStartDate  select ''65-12836930'',''11/01/2015''
+insert into #PilotStartDate  select ''95-26894334'',''11/01/2015''
+insert into #PilotStartDate  select ''95-55693023'',''11/01/2015''
+insert into #PilotStartDate  select ''55-12312695'',''04/01/2016''
+insert into #PilotStartDate  select ''75-27206950'',''03/01/2016''
+insert into #PilotStartDate  select ''25-38257142'',''03/01/2016''
+insert into #PilotStartDate  select ''06-11241364'',''03/01/2016''
+insert into #PilotStartDate  select ''36-13268335'',''03/01/2016'''
+exec(@PilotStartDateQuery)
+
+select @PilotStartDate = stuff((select ',' + quotename(colName) from (
+	select  distinct(StartDate) as colName from #PilotStartDate
+) sub order by colName desc for xml path(''), type).value('.', 'nvarchar(max)'),1,1,'')
+
+--select * from #PilotStartDate
+
 if object_id('tempdb..#Table') is not null drop table #Table
 select * into #Table from (
 select
@@ -93,6 +111,7 @@ from
 	join ETLStaging..FinanceParentTable c on txn.PlatformId = c.PlatformId and txn.Ref_CompanyId = c.ChildCompanyId
 	join YapstoneDM..PaymentType pt on txn.PaymentTypeId = pt.PaymentTypeId
 	left join #PaymentTypeClassifier ptc on pt.Name = ptc.PaymentType
+	join #PilotStartDate psd on psd.ParentAccountid = c.ParentAccountId and psd.StartDate <=txn.PostDate_R
 	join #DesiredParents dp on dp.PlatformId = c.PlatformId and dp.ParentAccountId = c.ParentAccountId
 	join #Capacity capacity on capacity.ParentAccountId = c.ParentAccountId and capacity.PlatformId = c.PlatformId 
 		and cast(dateadd(d, -1 , dateadd(mm, (year(txn.PostDate_R) - 1900) * 12 + month(txn.PostDate_R), 0)) as date) = capacity.Date
@@ -156,6 +175,5 @@ select *,
 from #Report
 ) src
 ) src
-
 
 
